@@ -5,7 +5,7 @@
 ## 0. Goals and Deliverables
 
 ### Primary Goal
-PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행하고, 같은 대화 UI에서 RAG와 MCP 도구를 프로젝트별로 연결할 수 있는 로컬 우선(Local-first) 플랫폼을 설계한다. 초기 모델군은 Gemma와 Qwen 최신 공개 가중치 계열이며, 특정 버전을 코드에 고정하지 않고 모델 카탈로그로 갱신한다.
+PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행하고, 같은 대화 UI에서 RAG와 MCP 도구를 프로젝트별로 연결할 수 있는 로컬 우선(Local-first) 플랫폼을 설계한다. 초기 필수 모델군은 영상에서 확인한 Qwen3, DeepSeek-R1 Distill 7B, Gemma 4, Mistral Small 3, Phi-4 Mini이며, 특정 revision을 코드에 고정하지 않고 모델 카탈로그로 갱신한다.
 
 ### Success Definition
 - 사용자가 10분 이내에 장치 진단부터 권장 모델 설치, 첫 스트리밍 대화까지 완료한다.
@@ -15,6 +15,8 @@ PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행
 - MCP 서버와 도구는 프로젝트별로 활성화하며, 민감한 도구 호출 전에 사용자 승인을 받는다.
 - 대화 내용, 문서 원문, 임베딩은 기본적으로 로컬에만 저장되고 외부 통신은 명시적 동의 및 허용 목록을 따른다.
 - PC·서버·모바일 클라이언트가 동일한 대화·프로젝트 도메인과 OpenAI 호환 API를 사용한다.
+- 5개 필수 모델군 모두 PC 또는 서버에서 최소 하나의 검증된 로컬 실행 아티팩트를 가지며, 모바일은 장치 적합성 검사를 통과한 variant만 설치할 수 있다.
+- 모델별 chat template, thinking mode, tool calling, vision, context length 차이가 capability로 표현되고 대화·RAG·MCP UI가 이를 존중한다.
 
 ### Out of Scope
 - 1차 버전에서 모델 학습, 파인튜닝, 분산 학습, 클라우드 추론 서비스를 직접 제공하지 않는다.
@@ -28,7 +30,7 @@ PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행
 ### Background
 로컬 LLM 생태계는 모델 저장소, 양자화 포맷, 실행 엔진, 하드웨어 가속 방식이 분산되어 있다. 사용자는 모델 이름만으로 자신의 장치에서 실행 가능한지 판단하기 어렵고, RAG 및 MCP를 붙이려면 별도의 벡터 DB, 문서 파서, 서버 설정과 보안 판단이 필요하다. 이 프로젝트는 이 복잡성을 하나의 설치·대화·프로젝트 경험으로 묶는다.
 
-2026-08-18 공식 자료 조사 기준 Gemma 4는 E2B, E4B, 12B, 31B, 26B-A4B 변형을 제공하며, Google LiteRT-LM은 Android, iOS, 데스크톱을 포함한 엣지 실행을 지향한다. Qwen 공식 조직은 Qwen 3.6을 최신 일반 모델 계열로 안내하지만, 최신 대형 모델이 곧 모바일 적합 모델이라는 뜻은 아니다. 따라서 `최신 모델`과 `현재 장치에 적합한 모델`을 별도 축으로 관리한다.
+2026-08-21 공식 자료 조사 기준 Gemma 4는 E2B, E4B, 12B, 31B, 26B-A4B 변형을 제공하며, Google LiteRT-LM은 Android, iOS, 데스크톱을 포함한 엣지 실행을 지향한다. Qwen3는 공식 GGUF와 모바일 실행 경로를 제공한다. DeepSeek-R1 Distill Qwen 7B는 Qwen2.5 기반 추론 특화 모델이다. Mistral Small 3.0은 24B Apache 2.0 모델이지만 현재 공식 문서상 retired 상태이므로 호환성 지원 대상으로 유지하되 신규 기본 추천에서는 후속 모델을 함께 안내한다. Phi-4 Mini Instruct는 3.8B급, 128K context, MIT 모델로 자원 제한 환경을 주요 용도로 명시한다. `최신 모델`, `영상 속 호환 모델`, `현재 장치에 적합한 모델`을 별도 축으로 관리한다.
 
 참고 공식 자료:
 - [Gemma releases](https://ai.google.dev/gemma/docs/releases)
@@ -36,6 +38,11 @@ PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행
 - [Google LiteRT-LM](https://github.com/google-ai-edge/LiteRT-LM)
 - [Qwen official organization](https://github.com/QwenLM)
 - [Qwen 3.6 repository](https://github.com/QwenLM/Qwen3.6)
+- [Qwen3 local llama.cpp guide](https://github.com/QwenLM/Qwen3/blob/main/docs/source/run_locally/llama.cpp.md)
+- [DeepSeek-R1 official repository](https://github.com/deepseek-ai/DeepSeek-R1)
+- [Mistral Small 3 announcement](https://mistral.ai/news/mistral-small-3)
+- [Mistral Small 3.0 lifecycle status](https://docs.mistral.ai/models/mistral-small-3-0-25-01)
+- [Phi-4 Mini Instruct model card](https://huggingface.co/microsoft/Phi-4-mini-instruct)
 
 ### Objective
 Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집하고, Rust 중심의 코어 아키텍처와 플랫폼별 런타임 어댑터, 모델 적합성 판정, 대화, RAG, MCP, 보안, 검증 계약을 재현 가능한 산출물로 만든다.
@@ -49,7 +56,7 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 |---|---|---|---|
 | 제품 요구사항 | md/json | user | 대상 플랫폼, 개인정보, UX 범위 |
 | 장치 프로필 | json | system | OS, arch, RAM, 가용 저장공간, CPU/GPU/NPU, 배터리/열 상태 |
-| 모델 메타데이터 | json/api | official registry | 모델 ID, revision, 파일, 해시, 라이선스, 포맷, 메모리 요구량 |
+| 모델 메타데이터 | json/api | official registry | 5개 필수 family, 모델 ID, revision, 파일, 해시, 라이선스, 포맷, 메모리 요구량 |
 | 런타임 capability | json | runtime adapter | 지원 포맷, 가속기, 컨텍스트, tool calling 지원 |
 | 사용자 문서 | pdf/md/txt/html | user/file/url | 로컬 저장 기본 |
 | MCP 설정 | json | user/registry | 실행 명령 또는 원격 endpoint, 권한 선언 |
@@ -73,15 +80,24 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 - 대형 모델 다운로드는 중단 재개, 해시 검증, 충분한 여유 공간 확인, Wi-Fi/충전 조건 설정이 필요하다.
 - 모델 라이선스, gated access, 배포 조건을 설치 전에 표시하고 사용자 동의를 기록한다.
 - 모델이 선언한 메모리 요구량만 믿지 않고 최초 실행 micro-benchmark와 OOM 안전 여유를 적용한다.
+- 성능은 decode tokens/s 하나로 판단하지 않고 prefill, TTFT, decode, total completion, peak memory, task success를 분리한다.
+- 모델 weights, KV cache, runtime overhead, OS reserve를 합산하고 dense/MoE의 total parameter와 active parameter를 구분한다.
 - MCP는 로컬 프로세스(stdio)와 원격 HTTP 계열 전송을 구분하며, 모바일에서는 임의 바이너리 실행을 허용하지 않고 원격 또는 앱 내장 MCP만 지원한다.
 - 웹페이지 수집은 robots, 인증, 저작권, 네트워크 동의를 준수하며 기본적으로 사용자가 지정한 URL만 처리한다.
 - Assumption: 1차 UI는 웹 기반 반응형 UI와 데스크톱 패키징을 먼저 제공하고, Android/iOS 네이티브 앱은 동일 API/도메인 계약을 사용한다.
 - Assumption: 서버 모드는 단일 사용자/신뢰 네트워크를 우선하고 다중 사용자 RBAC는 후속 단계다.
+- 원격 추론은 pairing된 Trusted Node만 허용하고 TLS, scoped token, revocation, local/VPN 우선 경로를 사용한다.
+- Portable Workspace는 PoC 범위이며 host RAM·temporary file·OS log 흔적을 완전히 제거한다고 보장하지 않는다.
+- cloud fallback은 기본 비활성화하며 프로젝트별 명시 동의, 전송 preview, redaction, 비용·token 제한이 필요하다.
+- `지원`은 family 이름 인식만을 뜻하지 않는다. 공식/승인된 artifact 다운로드, template 적용, 추론, 중지, 대화 복원, RAG, 지원 가능한 MCP tool calling까지 검증되어야 한다.
+- Mistral Small 3.0은 retired 모델이므로 카탈로그에 `compatibility` badge와 후속 모델 안내를 표시하고 보안·포맷 호환 패치는 유지하되 기본 자동 추천 우선순위는 낮춘다.
+- 영상 속 벤치마크·VRAM·라이선스 문구는 마케팅 참고값으로만 보존하며, 제품 판정은 pinned model card, 실제 artifact license, 장치별 benchmark에 따른다.
 
 ### Terms
 | Term | Definition |
 |---|---|
-| Model Catalog | 설치 가능 아티팩트, revision, 라이선스, 포맷, runtime compatibility를 담은 서명된 목록 |
+| Model Catalog | 설치 가능 아티팩트, family, revision, 라이선스, 포맷, runtime compatibility를 담은 서명된 목록 |
+| Required Five | Qwen3, DeepSeek-R1 Distill Qwen 7B, Gemma 4, Mistral Small 3, Phi-4 Mini의 초기 호환성 대상 |
 | Device Profile | 장치 자원과 가속기 capability를 정규화한 스냅샷 |
 | Fit Score | 모델과 장치의 실행 적합성을 메모리, 성능, 기능, 안정성으로 평가한 점수 |
 | Runtime Adapter | 공통 추론 계약을 LiteRT-LM, llama.cpp 계열, MLX, 서버 엔진 등에 연결하는 계층 |
@@ -103,7 +119,7 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 
 #### Step 01: Establish Capability Baseline
 1) Step Goal:
-공식 자료와 실제 대상 장치군을 기준으로 모델·런타임·플랫폼 지원 매트릭스를 만든다.
+공식 자료와 실제 대상 장치군을 기준으로 5개 필수 모델군의 모델·런타임·플랫폼 지원 매트릭스를 만든다.
 
 2) Input / Output:
 - Input: 제품 요구사항, 공식 모델 카드, 런타임 문서, 표본 장치 프로필.
@@ -116,7 +132,7 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 공식 endpoint에서 메타데이터를 수집하고 revision, checksum, 크기, 포맷 필드를 schema로 검증한다.
 
 5) Success Criteria:
-Gemma/Qwen 후보별 최소 하나의 실행 경로와 Android/iOS/desktop/server 지원 상태가 근거 URL 및 확인일과 함께 존재한다.
+5개 필수 모델군별 최소 하나의 PC 또는 서버 실행 경로와 Android/iOS/desktop/server 지원 상태가 근거 URL 및 확인일과 함께 존재한다. 모바일 미지원도 실패가 아니라 검증 근거가 있는 명시적 상태여야 한다.
 
 6) Validation Method:
 JSON Schema 검사, 출처 URL 접근 검사, 사람이 모바일 지원 표본을 검토한다.
@@ -170,16 +186,16 @@ OpenAPI/JSON Schema, Rust trait signature, DB migration 규칙을 정적 검사�
 - Output: ranked recommendation JSON과 예상 자원·품질·기능 trade-off.
 
 3) LLM Decision Area:
-`일반 대화`, `코딩`, `긴 문서`, `도구 사용`, `멀티모달` 목적의 가중치와 설명 문구를 구성한다.
+`일반 대화`, `코딩`, `추론`, `긴 문서`, `도구 사용`, `멀티모달` 목적의 가중치와 모델 family별 설명 문구를 구성한다.
 
 4) Code Processing Area:
-hard filter(arch/format/runtime/license/storage), 예상 peak RAM(`weights + KV cache + runtime overhead + safety margin`), disk reserve, thermal tier, benchmark score를 결정론적으로 계산한다.
+hard filter(arch/format/runtime/license/storage), 예상 peak RAM(`weights + KV cache + runtime overhead + OS reserve + safety margin`), GPU residency/offload, disk reserve, thermal tier, benchmark score를 결정론적으로 계산한다.
 
 5) Success Criteria:
-같은 입력은 같은 추천을 만들고, 지원 불가 모델은 설치 버튼이 비활성화되며 구체적 이유와 대안이 표시된다.
+같은 입력은 같은 추천을 만들고, 지원 불가 모델은 설치 버튼이 비활성화되며 구체적 이유와 같은 family의 작은 variant 또는 대안 모델이 표시된다.
 
 6) Validation Method:
-golden device fixtures, 경계값/property tests, 실제 저·중·고사양 장치 benchmark 비교.
+golden device fixtures, 경계값/property tests, dense/MoE 및 context/KV-cache fixtures, 실제 저·중·고사양 장치 benchmark 비교.
 
 7) Failure Handling:
 장치 정보가 누락되면 보수적 CPU/RAM 기준을 사용하고 `측정 필요`로 표시한다. 최초 실행 OOM 또는 과열 시 더 작은 quant/model을 제안하고 자동 재실행은 한 번만 허용한다.
@@ -236,10 +252,10 @@ corrupt/truncated artifact 테스트, 디스크 부족 fault injection, checksum
 chat template 적용, tokenizer/context budget 계산, cancellation, backpressure, persistence, retry idempotency, SSE/WebSocket 변환을 수행한다.
 
 5) Success Criteria:
-대화 생성·이름 변경·검색·삭제, 메시지 수정 후 분기, 모델 전환, 응답 중지가 가능하고 앱 재시작 후 복원된다.
+대화 생성·이름 변경·검색·삭제, 메시지 수정 후 분기, 모델/로컬·Trusted Node routing 전환, 응답 중지가 가능하고 앱 재시작 후 복원된다.
 
 6) Validation Method:
-API contract tests, 긴 대화 context-budget tests, stream cancellation tests, golden chat-template tests.
+API contract tests, 긴 대화 context-budget tests, stream cancellation tests, golden chat-template tests, node disconnect/reconnect 및 routing failover tests.
 
 7) Failure Handling:
 컨텍스트 초과 시 최근 메시지와 고정 메시지를 보존해 요약을 제안한다. runtime crash는 세션을 복구하고 미완료 메시지를 명시한다. 자동 재생성은 중복 부작용이 없는 경우 1회로 제한한다.
@@ -323,10 +339,10 @@ schema 불일치나 권한 위반은 즉시 deny하고 기록한다. timeout은 
 정성적 대화/RAG 품질을 평가하고 잔여 위험의 출시 허용 여부를 제안한다.
 
 4) Code Processing Area:
-unit/integration/E2E, memory/thermal benchmark, offline test, network deny test, migration/rollback, SBOM/license scan을 실행한다.
+unit/integration/E2E, cold/warm prefill·TTFT·decode·peak-memory benchmark, sustained thermal test, offline test, network deny test, code build/test/run task-completion, migration/rollback, SBOM/license scan을 실행한다.
 
 5) Success Criteria:
-Android/iOS 각 2개 tier, desktop 3 OS, Linux server에서 필수 시나리오가 통과하고 P0/P1 결함이 없으며 알려진 제한이 UI와 문서에 표시된다.
+Android/iOS 각 2개 tier, desktop 3 OS, Linux server에서 필수 시나리오가 통과하고 P0/P1 결함이 없으며 estimated/measured 성능과 알려진 제한이 UI와 문서에 표시된다.
 
 6) Validation Method:
 CI matrix, physical-device test report, schema validator, human acceptance test, security checklist.
@@ -368,15 +384,20 @@ P0/P1 또는 데이터 유출 가능성은 release abort다. 특정 어댑터만
     /device-profile           # hardware/capability detection
     /model-catalog            # signed catalog, license, provenance
     /model-fit                # deterministic recommendation engine
+    /benchmark-core          # TTFT, throughput, memory, task completion
     /model-store              # resumable download and verified storage
     /inference-core           # runtime-neutral session/stream contracts
     /runtime-litert           # LiteRT-LM FFI adapter
     /runtime-gguf             # GGUF/llama.cpp-family FFI adapter
+    /runtime-mlx              # Apple Silicon optimized adapter
+    /runtime-mobile           # MNN/ExecuTorch-style mobile adapter boundary
     /runtime-server           # optional server runtime adapter
     /rag-core                 # ingestion, index, retrieval, citations
     /mcp-gateway              # transports, policy, approval, sandbox
     /persistence              # SQLite migrations and encrypted secrets
     /local-api                # OpenAI-compatible + native management API
+    /trusted-node             # secure pairing, routing, revocation
+    /portable-workspace       # external-storage PoC and host trace policy
   /contracts
     openapi.yaml
     model-catalog.schema.json
@@ -465,15 +486,30 @@ skill-creator가 보장하는 규격:
 | MCP | permission gateway | 모델이 도구를 직접 실행하지 못하도록 decision과 execution 분리 |
 | Model updates | signed remote catalog, cached offline | 최신 계열 지원과 공급망 안전성의 균형 |
 | API | native management API + OpenAI-compatible inference subset | 자체 기능과 기존 프로젝트 연동을 동시에 지원 |
+| Performance evidence | estimated + device-measured | 영상·community 수치를 일반화하지 않고 실제 장치 결과로 추천 재보정 |
+| Remote inference | paired Trusted Node | 고사양 PC/server를 모바일·노트북에서 안전하게 공유 |
+| Agent execution | complexity and trust gates | one-shot 과신을 막고 plan-first, review, build/test/run을 강제 |
+| Portable mode | encrypted external workspace PoC | 저사양·이동 환경을 지원하되 host 무흔적을 과장하지 않음 |
+
+### Required Model Support Matrix
+| Family | Baseline artifact | Runtime candidates | Desktop/Server | Mobile | Special contract |
+|---|---|---|---|---|---|
+| Qwen3 | official GGUF, pinned quant/revision | GGUF, MLX, validated mobile adapter | Required | Small variants required | thinking/non-thinking mode, tool schema |
+| DeepSeek-R1 | Distill-Qwen-7B pinned artifact | GGUF, server adapter | Required | Conditional after physical-device gate | reasoning stream separation, token budget |
+| Gemma 4 | official deployable E2B/E4B artifact | LiteRT-LM, GGUF where verified | Required | Required for a verified small variant | modality and accelerator capability |
+| Mistral Small 3 | 24B Instruct pinned artifact | GGUF, server adapter | Required | Explicitly unsupported in v1 unless gate passes | retired lifecycle badge, successor hint |
+| Phi-4 Mini | 3.8B Instruct pinned artifact | GGUF, LiteRT-LM where verified | Required | Required for a verified quant | safe context cap, function calling capability |
+
+각 cell은 `supported`, `experimental`, `blocked`, `retired-compatible`, `unverified` 중 하나와 검증 날짜를 가져야 한다. 모델 family 지원과 개별 artifact 지원을 분리하고, community quant는 checksum과 재현 benchmark가 없으면 `Verified`로 승격하지 않는다.
 
 ### Phased Delivery
 | Phase | Deliverable | Exit Gate |
 |---|---|---|
-| 0. Feasibility | Android/iOS/desktop에서 Gemma/Qwen 각 1개 검증 모델의 실제 benchmark | RAM, 속도, 열, 안정성 수치 확보 |
-| 1. Local Chat MVP | 장치 진단, catalog, 설치, 스트리밍 대화, 저장/검색/삭제 | offline E2E 및 artifact integrity 통과 |
-| 2. RAG | 파일/URL/폴더 수집, hybrid retrieval, citation | 한국어 retrieval 평가와 project isolation 통과 |
-| 3. MCP | 등록, tool discovery, 승인, sandbox/audit | 공격 fixture와 권한 replay 테스트 통과 |
-| 4. Ecosystem | OpenAI 호환 API, 추가 runtime/model adapter, 서버 패키지 | contract suite와 cross-platform release gate 통과 |
+| 0. Feasibility | 5개 필수 모델 PC/서버 benchmark와 Qwen3/Gemma 4/Phi-4 Mini/DeepSeek 7B 모바일 후보 검증 | RAM, 속도, 열, 안정성 및 명시적 blocked 상태 확보 |
+| 1. Local Chat MVP | 장치 진단, 5-family catalog, 설치, 스트리밍 대화, 저장/검색/삭제 | 5개 PC/서버 E2E, 모바일 필수 variant, artifact integrity 통과 |
+| 2. RAG | 파일/URL/폴더 수집, hybrid retrieval, citation, Model Lab 확장 | 한국어 retrieval 및 task-completion 평가와 project isolation 통과 |
+| 3. MCP | 등록, tool discovery, 승인, sandbox/audit, agent trust levels | 공격 fixture, 권한 replay, supervised completion 테스트 통과 |
+| 4. Ecosystem | OpenAI 호환 API, Trusted Node, Portable Workspace PoC, 추가 adapter | pairing 보안, contract suite, cross-platform release gate 통과 |
 
 ### Key Risks and Mitigations
 | Risk | Impact | Mitigation |
@@ -485,6 +521,12 @@ skill-creator가 보장하는 규격:
 | RAG 환각 또는 잘못된 인용 | 신뢰 저하 | citation integrity, 근거 부족 응답, retrieval evaluation |
 | MCP prompt injection | 데이터/시스템 피해 | tool result 비신뢰 처리, allow/ask/deny, sandbox, secret scoping, human approval |
 | 모바일 앱스토어 제한 | 임의 코드/대형 파일 배포 제약 | 원격 다운로드 정책 준수, 모바일 임의 프로세스 실행 금지, 앱 내장 runtime만 사용 |
+| 5개 모델의 서로 다른 chat/tool 계약 | 출력 파싱 오류와 MCP 오작동 | family별 template conformance suite와 capability-gated UI |
+| Mistral Small 3 retired 상태 | 신규 사용자에게 구형 모델 추천 | 호환성 badge, 기본 추천 하향, 후속 모델 migration 안내 |
+| community/video benchmark 일반화 | 잘못된 모델·장비 추천 | 출처 badge, 재현 조건 저장, 해당 장치 micro-benchmark로 재보정 |
+| 원격 노드 노출 | 대화·문서 유출 또는 무단 추론 | mutual pairing, TLS, scoped token, revoke, local/VPN 기본 |
+| USB/portable 무흔적 오해 | host 임시 데이터 노출 | 명시적 trace warning, workspace 암호화, clean-exit 검사, 무흔적 보장 금지 |
+| local agent 과신 | 잘못된 설계·코드 자동 실행 | complexity classifier, plan-first, human/evaluator gate, sandbox build/test/run |
 
 ## 4. Validation Checklist
 
