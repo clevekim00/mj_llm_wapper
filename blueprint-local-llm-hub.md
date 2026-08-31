@@ -81,7 +81,9 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 - 모델 라이선스, gated access, 배포 조건을 설치 전에 표시하고 사용자 동의를 기록한다.
 - 모델이 선언한 메모리 요구량만 믿지 않고 최초 실행 micro-benchmark와 OOM 안전 여유를 적용한다.
 - 성능은 decode tokens/s 하나로 판단하지 않고 prefill, TTFT, decode, total completion, peak memory, task success를 분리한다.
+- coding/agent 평가는 requirement coverage, plan-to-code traceability, first-run success, manual intervention time, energy를 포함한다.
 - 모델 weights, KV cache, runtime overhead, OS reserve를 합산하고 dense/MoE의 total parameter와 active parameter를 구분한다.
+- load admission과 지속 실행 상태를 분리하고 memory pressure·swap·thermal 임계치를 넘으면 context/variant 조정 또는 안전 unload한다.
 - MCP는 로컬 프로세스(stdio)와 원격 HTTP 계열 전송을 구분하며, 모바일에서는 임의 바이너리 실행을 허용하지 않고 원격 또는 앱 내장 MCP만 지원한다.
 - 웹페이지 수집은 robots, 인증, 저작권, 네트워크 동의를 준수하며 기본적으로 사용자가 지정한 URL만 처리한다.
 - Assumption: 1차 UI는 웹 기반 반응형 UI와 데스크톱 패키징을 먼저 제공하고, Android/iOS 네이티브 앱은 동일 API/도메인 계약을 사용한다.
@@ -116,6 +118,8 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 | 모델 설명과 라이선스 요약, 적합성 결과의 자연어 설명 | 적합성 등급 계산 및 hard constraint 판정 |
 | RAG 결과로 답변 생성, 인용할 청크 선택 | 문서 파싱, 중복 제거, ACL 필터, top-k 검색, 인용 ID 검증 |
 | MCP 도구 선택과 인자 제안 | 도구 schema 검증, 승인 확인, sandbox 실행, timeout/출력 제한, 감사 로그 |
+| 작업 복잡도 분류와 planner/implementer/reviewer 후보 제안 | capability score 기반 허용 경로, 최소 context handoff, acceptance test, intervention event 기록 |
+| Quick/Balanced/Deep profile과 신규 후보 승격 판단 | memory admission, swap/pressure 감시, fallback 순서, catalog gate를 결정론적으로 집행 |
 
 #### Step 01: Establish Capability Baseline
 1) Step Goal:
@@ -191,14 +195,18 @@ OpenAPI/JSON Schema, Rust trait signature, DB migration 규칙을 정적 검사�
 4) Code Processing Area:
 hard filter(arch/format/runtime/license/storage), 예상 peak RAM(`weights + KV cache + runtime overhead + OS reserve + safety margin`), GPU residency/offload, disk reserve, thermal tier, benchmark score를 결정론적으로 계산한다.
 
+결과에는 `ARTIFACT_FITS`, `SESSION_STARTABLE`, `SUSTAINED_SAFE`를 별도 boolean과 근거로 기록한다.
+
 5) Success Criteria:
 같은 입력은 같은 추천을 만들고, 지원 불가 모델은 설치 버튼이 비활성화되며 구체적 이유와 같은 family의 작은 variant 또는 대안 모델이 표시된다.
+
+개발 workload에서는 planning, implementation, review 점수를 분리해 단일 모델 고정과 단계별 routing 후보를 모두 반환한다.
 
 6) Validation Method:
 golden device fixtures, 경계값/property tests, dense/MoE 및 context/KV-cache fixtures, 실제 저·중·고사양 장치 benchmark 비교.
 
 7) Failure Handling:
-장치 정보가 누락되면 보수적 CPU/RAM 기준을 사용하고 `측정 필요`로 표시한다. 최초 실행 OOM 또는 과열 시 더 작은 quant/model을 제안하고 자동 재실행은 한 번만 허용한다.
+장치 정보가 누락되면 보수적 CPU/RAM 기준을 사용하고 `측정 필요`로 표시한다. 최초 실행 OOM, swap 급증 또는 과열 시 context 축소 → 작은 quant/variant → unload 순으로 대응하고 자동 재실행은 한 번만 허용한다.
 
 8) Skills / Scripts:
 - Skill: `device-model-advisor`
@@ -339,7 +347,7 @@ schema 불일치나 권한 위반은 즉시 deny하고 기록한다. timeout은 
 정성적 대화/RAG 품질을 평가하고 잔여 위험의 출시 허용 여부를 제안한다.
 
 4) Code Processing Area:
-unit/integration/E2E, cold/warm prefill·TTFT·decode·peak-memory benchmark, sustained thermal test, offline test, network deny test, code build/test/run task-completion, migration/rollback, SBOM/license scan을 실행한다.
+unit/integration/E2E, cold/warm prefill·TTFT·decode·peak-memory benchmark, sustained thermal/energy test, offline test, network deny test, 격리된 Project Arena의 code build/test/run·requirement coverage·manual intervention 측정, migration/rollback, SBOM/license scan을 실행한다.
 
 5) Success Criteria:
 Android/iOS 각 2개 tier, desktop 3 OS, Linux server에서 필수 시나리오가 통과하고 P0/P1 결함이 없으며 estimated/measured 성능과 알려진 제한이 UI와 문서에 표시된다.
@@ -384,7 +392,10 @@ P0/P1 또는 데이터 유출 가능성은 release abort다. 특정 어댑터만
     /device-profile           # hardware/capability detection
     /model-catalog            # signed catalog, license, provenance
     /model-fit                # deterministic recommendation engine
+    /memory-admission        # load/sustained safety and pressure guard
     /benchmark-core          # TTFT, throughput, memory, task completion
+    /project-arena           # paired project runs and acceptance evidence
+    /capability-router       # planner/implementer/reviewer model routing
     /model-store              # resumable download and verified storage
     /inference-core           # runtime-neutral session/stream contracts
     /runtime-litert           # LiteRT-LM FFI adapter
@@ -473,6 +484,7 @@ skill-creator가 보장하는 규격:
 | `output/step06_rag_evaluation.json` | json | Step 06 | 검색 및 인용 품질 결과 |
 | `output/step07_mcp_threat_report.json` | json | Step 07 | MCP 정책 및 공격 fixture 결과 |
 | `output/step08_release_gate.json` | json | Step 08 | 플랫폼별 출시 판정 |
+| `output/step08_project_arena_report.json` | json | Step 08 | paired run, acceptance coverage, 개입·에너지 비용 |
 
 ### Product Architecture Decisions
 | Decision | Choice | Rationale |
@@ -487,8 +499,12 @@ skill-creator가 보장하는 규격:
 | Model updates | signed remote catalog, cached offline | 최신 계열 지원과 공급망 안전성의 균형 |
 | API | native management API + OpenAI-compatible inference subset | 자체 기능과 기존 프로젝트 연동을 동시에 지원 |
 | Performance evidence | estimated + device-measured | 영상·community 수치를 일반화하지 않고 실제 장치 결과로 추천 재보정 |
+| Session profiles | Quick/Balanced/Deep | 같은 family의 속도·품질·headroom trade-off를 사용자 의도로 선택 |
+| New model onboarding | experimental fast-track | 출시 직후 모델을 기본 추천과 분리해 빠르게 검증하되 공급망·안정성 gate 유지 |
 | Remote inference | paired Trusted Node | 고사양 PC/server를 모바일·노트북에서 안전하게 공유 |
 | Agent execution | complexity and trust gates | one-shot 과신을 막고 plan-first, review, build/test/run을 강제 |
+| Model comparison | paired Project Arena | 동일 요구·환경에서 결과물, 누락, 수정 비용을 비교 |
+| Task routing | verified capability router | 계획·구현·검토 강점이 다른 모델을 단계별 선택 |
 | Portable mode | encrypted external workspace PoC | 저사양·이동 환경을 지원하되 host 무흔적을 과장하지 않음 |
 
 ### Required Model Support Matrix
@@ -527,6 +543,10 @@ skill-creator가 보장하는 규격:
 | 원격 노드 노출 | 대화·문서 유출 또는 무단 추론 | mutual pairing, TLS, scoped token, revoke, local/VPN 기본 |
 | USB/portable 무흔적 오해 | host 임시 데이터 노출 | 명시적 trace warning, workspace 암호화, clean-exit 검사, 무흔적 보장 금지 |
 | local agent 과신 | 잘못된 설계·코드 자동 실행 | complexity classifier, plan-first, human/evaluator gate, sandbox build/test/run |
+| 모델의 허위 완료 선언 | 기능 누락을 성공으로 처리 | requirement-to-test mapping, plan/code diff, acceptance test를 완료 기준으로 사용 |
+| 단계별 모델 handoff의 문맥 유출·손실 | 개인정보 노출 또는 구현 불일치 | 최소 context package, 프로젝트 정책 필터, handoff schema와 checksum |
+| 모델이 적재되지만 OS 여유가 없음 | swap, 앱 종료, 장기 성능 붕괴 | admission reserve, live pressure guard, context/quant fallback, safe unload |
+| 출시 직후 모델의 과대평가 | 불안정 artifact를 기본 추천 | Experimental 격리, pinned provenance, 반복 실측, 승격 checklist |
 
 ## 4. Validation Checklist
 

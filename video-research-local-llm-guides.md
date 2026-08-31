@@ -35,6 +35,10 @@
 | 한국어·도구 호출 | 1, 2 | 자연어 품질과 tool-call 안정성은 별도 평가해야 함 | 채택 | locale/tool benchmark |
 | hybrid local/cloud | 4, 5 | 로컬은 반복·민감 작업, cloud는 고난도 검증에 선택적으로 사용 | PoC | explicit opt-in fallback |
 | uncensored model | 3 | 안전장치 제거를 제품 기능으로 홍보하는 것은 위험 | 제외 | 별도 추천/프롬프트 제공하지 않음 |
+| 실제 프로젝트 A/B 비교 | 6 | 동일 요구·환경에서 산출물, 누락, 수정 비용까지 비교해야 개인 적합성을 알 수 있음 | 채택 | Project Arena, requirement coverage |
+| 단계별 모델 라우팅 | 6 | 계획이 자세한 모델과 구현이 빠른 모델이 다를 수 있음 | PoC | planner/implementer/reviewer route |
+| 메모리 한계 근접 실행 | 7 | 실행 가능 여부와 안정적으로 쓸 수 있는지는 다르며 swap·headroom을 실시간 확인해야 함 | 채택 | Memory Admission Controller |
+| 빠른/깊은 작업 프로필 | 7 | 같은 family의 소형 Dense와 중형 MoE를 작업 깊이에 따라 전환할 가치가 있음 | 채택 | Quick/Deep profile |
 
 ## 3. 영상별 정리
 
@@ -149,6 +153,58 @@
 - PoC: cloud fallback은 기본 off이고 프로젝트별 opt-in, redaction preview, 비용 제한을 갖는다.
 - 참고: 영상의 tokens/s와 비용 절감 비율은 해당 환경의 사례로만 저장한다.
 
+### 영상 6 — Qwen 3.6과 Gemma 4의 동일 앱 구현 비교
+
+- 링크: [Qwen 3.6 vs Gemma 4: I Built the Same App With Both Locally](https://www.youtube.com/watch?v=Um8Px55mINc)
+- 분류: 실제 프로젝트 A/B 평가, coding agent, 계획-구현 일치도, 에너지 사용
+- 환경: 데스크톱 GPU에서 모델을 실행하고 네트워크를 통해 agent client를 사용
+- 과제: Tauri 기반 Markdown viewer/editor를 동일 요구사항으로 구현
+
+주요 관찰:
+
+- `0:15–0:44`: 추상 benchmark의 객관적 1등보다 자신의 task와 hardware에 맞는 모델을 찾는 것을 목표로 한다.
+- `1:27–2:26`: 동일 기술 스택과 환경에서 Qwen 3.6 27B와 Gemma 4 31B dense 모델을 비교한다.
+- `3:08–3:40`, `6:32–7:10`: 두 모델 모두 phase와 작은 task로 계획하지만 Qwen 쪽 계획이 더 상세하다.
+- `4:04–6:13`: Qwen은 구현 중 자기 오류를 찾았지만 완료까지 오래 걸리고 수동 port/API 수정이 필요했으며 일부 toolbar가 작동하지 않았다.
+- `7:33–9:26`: Gemma는 약 두 배 빠르게 끝났고 파일 구조가 더 좋았지만 filesystem plugin 설정이 빠졌고 계획한 일부 UI 기능을 생략했다.
+- `7:33–7:46`: 장시간 로컬 추론의 전력 사용 증가가 언급된다.
+- `9:26–10:35`: 어느 모델도 절대 승자가 아니며 상세한 계획과 빠른 구현·구조화 사이에 trade-off가 있다.
+
+반영:
+
+- 채택: Model Lab에 동일 실제 프로젝트를 격리된 workspace에서 실행하는 `Project Arena`를 추가한다.
+- 채택: 결과 평가는 생성 시간뿐 아니라 requirement coverage, plan-to-code traceability, 첫 실행 성공, 수동 수정 횟수·시간, test pass, 저장소 구조를 포함한다.
+- 채택: “완료했다”는 모델의 선언 대신 요구사항별 acceptance test로 누락을 검출한다.
+- 채택: 생성 중 model self-correction과 사용자 개입을 event로 기록해 실질 자동화 비용을 계산한다.
+- 채택: 장시간 benchmark에는 소비 전력·에너지와 thermal throttling을 포함한다.
+- PoC: 프로젝트 단계별로 planner, implementer, reviewer 모델을 다르게 선택하는 capability router를 검증한다.
+- 참고: 영상의 46분, 약 2배 속도 등은 해당 hardware·prompt의 사례이며 제품 기본 성능으로 사용하지 않는다.
+
+### 영상 7 — Ornith 1.5 9B/35B의 24GB MacBook 실행
+
+- 링크: [Ornith 1.5 로컬 실행 영상](https://www.youtube.com/watch?v=fP9hBrweli4&list=PLX56MOPpu7GeKI8UneJsfXZfLwj0SV3Ko)
+- 분류: 신규 모델 first run, Dense/MoE 비교, unified memory 한계, 속도·품질 trade-off
+- 환경: MacBook M4 Pro, 24GB unified memory
+- 공식 참고: [Ornith 1.5 9B model card](https://huggingface.co/ornith-ai/Ornith-1.5-9B)
+
+주요 관찰:
+
+- `0:08–0:34`: 9B Dense 아티팩트는 약 6.5GB로 소개되며 짧은 로컬 질의에 빠른 응답을 보인다.
+- `0:34–0:57`: 약 23GB인 35B MoE를 24GB 통합 메모리에 올리면서 다른 프로세스를 위한 여유가 거의 사라진다.
+- `0:57–1:10`: 영상 환경에서 35B 모델은 약 5–8 tokens/s로 생성되지만 단일 first-run 사례다.
+- `1:10–1:40`: 복잡한 reasoning에서는 35B가 더 일관되고 세밀하다는 주관적 관찰이 있다.
+- `1:40–2:07`: “메모리에 들어간다”는 사실을 실행 가능성의 근거로 보지만 장시간 안정성·swap·앱 병행 사용은 검증하지 않는다.
+
+반영:
+
+- 채택: 모델 load 직전 정적 계산뿐 아니라 load 중·대화 중 memory pressure, swap, 앱 headroom을 감시한다.
+- 채택: `Fits`와 `Safe for sustained use`를 분리하며 OS·다른 앱에 남길 최소 메모리를 사용자가 설정할 수 있게 한다.
+- 채택: 임계치 초과 시 context 축소, 작은 quant/variant 전환, 모델 unload 순으로 안전하게 대응한다.
+- 채택: 같은 family 내 `Quick` 소형 모델과 `Deep` 대형/MoE 모델을 대화별로 전환하는 profile을 제공한다.
+- PoC: Ornith 1.5는 `Experimental/Fast-track candidate`로 catalog에 등록해 provenance, license, runtime, chat/tool template, 반복 benchmark를 통과하면 승격한다.
+- 참고: 5–8 tokens/s, 무소음, 24GB 적재 가능성은 영상 장치의 단기 관찰로만 저장한다.
+- 제외: 9B가 특정 대형 모델보다 우수하다는 vendor benchmark만으로 기본 추천하거나 모바일 지원을 선언하지 않는다.
+
 ## 4. 공통으로 도출된 제품 요구사항
 
 ### Model Lab
@@ -157,6 +213,8 @@
 - cold/warm start, prefill, TTFT, decode, peak RAM/VRAM, energy, thermal을 분리 측정한다.
 - 한국어, 일반 추론, coding, 긴 문서, multi-turn, tool calling, RAG citation을 평가한다.
 - coding 결과는 sandbox에서 실제 build/test/run한다.
+- 실제 프로젝트 A/B 실행 시 요구사항을 acceptance test와 연결하고 plan 대비 구현 누락을 계산한다.
+- 사람의 수정 횟수·시간, model self-correction, retry, 최초 실행 성공 여부를 기록한다.
 - 세 번 이상 반복하고 평균뿐 아니라 편차와 실패율을 기록한다.
 - 영상·community 결과는 `Community Evidence`, 자체 결과는 `Measured on this device`로 분리한다.
 
@@ -166,6 +224,7 @@
 - dense/MoE의 total parameter와 active parameter를 분리한다.
 - GPU full residency, partial offload, CPU-only 상태를 구분하고 성능 절벽을 경고한다.
 - 추천은 설치 전 추정치이며 첫 실행 benchmark 후 재보정한다.
+- `artifact fits`, `session starts`, `safe sustained use`를 별도 상태로 관리하고 swap·memory pressure를 지속 감시한다.
 
 ### Execution Modes
 
@@ -176,6 +235,14 @@
 | Trusted Node | PC/server가 추론, 모바일/노트북이 client | pairing, TLS, access token, local/VPN 우선 |
 | Hybrid Optional | local routine + cloud high complexity | 기본 off, 명시 동의, 전송 preview와 비용 제한 |
 
+### Session Profiles
+
+| Profile | 선택 기준 | 기본 동작 |
+|---|---|---|
+| Quick | 짧은 질의, 낮은 지연, multitasking | 작은 Dense/quant, 짧은 context, 넉넉한 OS reserve |
+| Balanced | 일반 대화·코딩 | fit score 1위의 검증 variant |
+| Deep | 복잡한 reasoning, 품질 우선 | 큰 Dense/MoE, 낮은 동시성, 강화된 memory/thermal guard |
+
 ### Agent Trust Levels
 
 | Level | 허용 범위 | 필수 검증 |
@@ -184,11 +251,20 @@
 | Supervised | 작은 작업 여러 단계 실행 | 매 단계 또는 위험 작업 승인, build/test |
 | Autonomous Candidate | 제한된 workspace에서 반복 실행·수정 | capability benchmark, sandbox, budget, rollback |
 
+### Capability Router
+
+- 모델별로 `planning`, `implementation`, `review`, `tool-use`, `Korean`, `RAG` 점수를 별도로 유지한다.
+- 프로젝트 전체에 한 모델을 고정하는 방식과 단계별 최적 모델을 사용하는 방식을 모두 지원한다.
+- 다른 모델로 전달할 때는 전체 대화를 넘기지 않고 승인된 plan, relevant files, test result만 전달한다.
+- 자동 라우팅은 동일 장치의 verified benchmark가 있을 때만 허용하고 그 외에는 사용자 선택을 요청한다.
+
 ## 5. 반영 우선순위
 
 ### MVP에 포함
 
 - Model Lab의 최소 benchmark
+- Project Arena의 requirement coverage 및 manual-intervention 측정
+- runtime memory-pressure guard와 Quick/Balanced/Deep profile
 - TTFT/decode/peak memory 표시
 - KV-cache/context aware 추천
 - runtime Simple/Advanced preset
@@ -206,6 +282,8 @@
 
 - 프로젝트별 opt-in cloud fallback
 - 실제 전력·온도·소음 측정 지원
+- planner/implementer/reviewer 단계별 model routing
+- Ornith 1.5 fast-track candidate의 반복 안정성 및 모바일 artifact 검증
 - 사용자 benchmark의 익명 공유; 개인정보 및 재현성 정책이 먼저 필요
 
 ## 6. 제외하거나 과장하지 않을 내용
