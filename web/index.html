@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f766e">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/styles.css">
+  <title>MJ Local LLM Hub</title>
+</head>
+<body>
+  <script>window.__LOCAL_TOKEN__ = "__TOKEN_VALUE__";</script>
+  <div class="shell">
+    <aside>
+      <div class="brand"><span class="mark">M</span><div><strong>Local LLM Hub</strong><small>온디바이스 워크스페이스</small></div></div>
+      <nav>
+        <button class="nav active" data-view="chat">대화</button>
+        <button class="nav" data-view="models">모델 센터</button>
+        <button class="nav" data-view="device">장치 진단</button>
+      </nav>
+      <section class="history"><div class="section-head"><span>최근 대화</span><button id="new-chat">＋</button></div><div id="conversation-list"></div></section>
+      <div id="runtime-pill" class="runtime-pill">런타임 확인 중</div>
+    </aside>
+
+    <main>
+      <section id="chat-view" class="view active">
+        <header><div><p class="eyebrow">LOCAL CHAT</p><h1>내 장치에서 나누는 대화</h1></div><select id="model-select" aria-label="대화 모델"></select></header>
+        <div id="empty-state" class="empty-state"><div class="orb">✦</div><h2>무엇을 함께 해볼까요?</h2><p>설치된 모델을 선택하면 대화가 장치 밖으로 나가지 않습니다.</p></div>
+        <div id="messages" class="messages"></div>
+        <form id="composer"><textarea id="prompt" rows="1" placeholder="메시지를 입력하세요" required></textarea><button id="send" type="submit">전송</button></form>
+      </section>
+
+      <section id="models-view" class="view">
+        <header><div><p class="eyebrow">MODEL CENTER</p><h1>이 장치에 맞는 모델</h1><p>추천 하나를 먼저 확인하고 필요하면 전체 모델을 비교하세요.</p></div></header>
+        <div id="best-model" class="best-model skeleton">추천 계산 중</div>
+        <div id="model-grid" class="model-grid"></div>
+      </section>
+
+      <section id="device-view" class="view">
+        <header><div><p class="eyebrow">DEVICE PROFILE</p><h1>실행 가능성 진단</h1><p>파일 적재가 아니라 장시간 안전한 실행을 기준으로 판단합니다.</p></div></header>
+        <div id="device-cards" class="device-cards"></div>
+        <div class="notice"><strong>MVP 범위</strong><p>PC·서버는 Ollama 어댑터로 실제 설치와 대화를 제공합니다. 모바일 화면은 PWA로 제공되며 네이티브 온디바이스 런타임은 다음 구현 게이트입니다.</p></div>
+      </section>
+    </main>
+  </div>
+  <div id="toast" role="status"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

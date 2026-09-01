@@ -1,0 +1,72 @@
+[
+  {
+    "id": "qwen3-0.6b-q4",
+    "family": "Qwen3",
+    "display_name": "Qwen3 0.6B",
+    "runtime_model": "qwen3:0.6b",
+    "parameter_label": "0.6B",
+    "download_bytes": 548405248,
+    "estimated_peak_ram_bytes": 1610612736,
+    "context_tokens": 40960,
+    "capabilities": ["chat", "thinking", "tools", "korean"],
+    "platforms": ["desktop", "server", "mobile-candidate"],
+    "lifecycle": "verified-runtime-tag",
+    "source_url": "https://ollama.com/library/qwen3/tags"
+  },
+  {
+    "id": "deepseek-r1-7b-q4",
+    "family": "DeepSeek-R1",
+    "display_name": "DeepSeek-R1 Distill Qwen 7B",
+    "runtime_model": "deepseek-r1:7b",
+    "parameter_label": "7B",
+    "download_bytes": 5046586573,
+    "estimated_peak_ram_bytes": 7516192768,
+    "context_tokens": 131072,
+    "capabilities": ["chat", "thinking", "reasoning"],
+    "platforms": ["desktop", "server"],
+    "lifecycle": "verified-runtime-tag",
+    "source_url": "https://ollama.com/library/deepseek-r1/tags"
+  },
+  {
+    "id": "gemma4-e2b-qat",
+    "family": "Gemma 4",
+    "display_name": "Gemma 4 E2B QAT",
+    "runtime_model": "gemma4:e2b-it-qat",
+    "parameter_label": "E2B",
+    "download_bytes": 4617089843,
+    "estimated_peak_ram_bytes": 7516192768,
+    "context_tokens": 131072,
+    "capabilities": ["chat", "thinking", "tools", "vision"],
+    "platforms": ["desktop", "server", "mobile-candidate"],
+    "lifecycle": "verified-runtime-tag",
+    "source_url": "https://ollama.com/library/gemma4/tags"
+  },
+  {
+    "id": "mistral-small-24b",
+    "family": "Mistral Small 3",
+    "display_name": "Mistral Small 3 24B",
+    "runtime_model": "mistral-small:24b",
+    "parameter_label": "24B",
+    "download_bytes": 15032385536,
+    "estimated_peak_ram_bytes": 25769803776,
+    "context_tokens": 32768,
+    "capabilities": ["chat", "tools", "korean"],
+    "platforms": ["desktop", "server"],
+    "lifecycle": "retired-compatible",
+    "source_url": "https://ollama.com/library/mistral-small"
+  },
+  {
+    "id": "phi4-mini-3.8b",
+    "family": "Phi-4 Mini",
+    "display_name": "Phi-4 Mini 3.8B",
+    "runtime_model": "phi4-mini:3.8b",
+    "parameter_label": "3.8B",
+    "download_bytes": 2684354560,
+    "estimated_peak_ram_bytes": 4831838208,
+    "context_tokens": 131072,
+    "capabilities": ["chat", "reasoning", "tools"],
+    "platforms": ["desktop", "server", "mobile-candidate"],
+    "lifecycle": "verified-runtime-tag",
+    "source_url": "https://ollama.com/library/phi4-mini"
+  }
+]

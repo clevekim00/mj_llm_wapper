@@ -1,5 +1,6 @@
 # Local LLM Hub Codex Automation Blueprint
 > Created: 2026-08-18
+> Updated: 2026-09-01
 > Purpose: Codex implementation blueprint
 
 ## 0. Goals and Deliverables
@@ -526,6 +527,58 @@ skill-creator가 보장하는 규격:
 | 2. RAG | 파일/URL/폴더 수집, hybrid retrieval, citation, Model Lab 확장 | 한국어 retrieval 및 task-completion 평가와 project isolation 통과 |
 | 3. MCP | 등록, tool discovery, 승인, sandbox/audit, agent trust levels | 공격 fixture, 권한 replay, supervised completion 테스트 통과 |
 | 4. Ecosystem | OpenAI 호환 API, Trusted Node, Portable Workspace PoC, 추가 adapter | pairing 보안, contract suite, cross-platform release gate 통과 |
+
+### MVP Implementation Slice (2026-09-01)
+
+이번 구현은 Phase 1의 위험을 가장 빨리 검증하는 단일 수직 흐름이다. 전체 출시판과 구분하며 Android/iOS 네이티브 추론을 완료한 것으로 표시하지 않는다.
+
+```text
+Responsive PWA
+  -> loopback Rust HTTP/SSE API
+    -> Device Profiler + Deterministic Fit Engine
+    -> Embedded Five-family Catalog
+    -> Ollama Runtime Adapter
+    -> Atomic JSON Conversation Store
+```
+
+| 영역 | MVP 구현 | 출시판으로 가기 위한 남은 게이트 |
+|---|---|---|
+| 장치 진단 | OS, arch, logical CPU, total RAM, runtime reachability | GPU/NPU, disk, thermal, battery, swap 측정 |
+| 모델 catalog | Qwen3, DeepSeek-R1, Gemma 4, Mistral Small 3, Phi-4 Mini의 검증 runtime tag | signed remote catalog, revision/checksum/license manifest |
+| 추천 | peak RAM/total RAM hard threshold와 이유 | micro-benchmark, KV/context, sustained thermal 보정 |
+| 설치 | Ollama pull NDJSON을 SSE progress로 전달 | 독립 resumable store, checksum/signature, quarantine |
+| 대화 | 멀티턴 token SSE, stop 시 upstream 종료, atomic JSON 저장 | context compaction, branching/search, latency metrics |
+| API | native status/models/install/chat/conversations, `/v1/models` subset | OpenAI chat/responses, Anthropic, conformance suite |
+| 보안 | `127.0.0.1` 강제, 실행별 token, catalog allowlist, CORS 미허용 | encrypted secret store, rate/body limits, Trusted Node pairing |
+| 모바일 | responsive installable PWA와 동일 domain contract | Android/iOS 앱 내장 Rust runtime adapter와 physical-device gate |
+| RAG/MCP | 미구현 | Phase 2/3에서 persistent RAG와 permission gateway 구현 |
+
+MVP runtime은 교체 가능한 경계를 검증하기 위해 Ollama HTTP API를 사용한다. 이는 최종 runtime 독점 결정이 아니며, `runtime.rs` 밖의 catalog·추천·대화 저장·UI가 Ollama의 응답 형식을 직접 알지 못하게 한다. 모델 tag는 2026-09-01 확인한 Ollama library 값이며 source URL을 catalog 각 항목에 기록한다.
+
+### MVP API Contract
+
+| Method | Path | Purpose | Security |
+|---|---|---|---|
+| `GET` | `/api/status` | 장치와 runtime 상태 | `X-Local-Token` |
+| `GET` | `/api/models` | catalog 및 장치별 추천 | `X-Local-Token` |
+| `POST` | `/api/models/{model}/install` | allowlisted 모델 pull SSE | `X-Local-Token` |
+| `POST` | `/api/chat` | 로컬 runtime chat SSE와 대화 저장 | `X-Local-Token` |
+| `GET` | `/api/conversations` | 최근 대화 복원 | `X-Local-Token` |
+| `DELETE` | `/api/conversations/{id}` | 대화 삭제 | `X-Local-Token` |
+| `GET` | `/v1/models` | 설치 모델의 OpenAI 형식 subset | `X-Local-Token` |
+
+SSE event는 설치에서 `progress`, `done`, `error`, 채팅에서 `meta`, `token`, `metrics`, `done`, `error`를 사용한다. UI는 runtime 고유 NDJSON을 직접 소비하지 않고 Rust API가 정규화한 event만 처리한다.
+
+### MVP Acceptance Criteria
+
+- Ollama가 중지된 상태에서도 앱이 시작되고 진단 화면에 명확한 복구 지침을 표시한다.
+- 4 GB fixture에서 Mistral Small 3가 `blocked`이고 Qwen3 소형이 최상위가 되는 deterministic test를 통과한다.
+- catalog 외 model ID를 설치 endpoint가 거절한다.
+- token 없는 관리·대화 API 요청은 `401`이며 non-loopback bind는 프로세스 시작 전에 거절한다.
+- upstream pull/chat 오류는 `502`로 변환되고 UI가 실패 상태에서 재시도 가능하다.
+- assistant 응답 완료 후 대화가 임시 파일 쓰기와 rename으로 저장되고 재시작 후 복원된다.
+- `cargo fmt --check`, `cargo test`, `cargo clippy --all-targets -- -D warnings`를 통과한다.
+- 모바일 PWA는 화면 대응 완료로만 판정하며, 네이티브 오프라인 inference가 통과하기 전 제품 전체의 모바일 성공 조건은 미달 상태로 유지한다.
 
 ### Key Risks and Mitigations
 | Risk | Impact | Mitigation |

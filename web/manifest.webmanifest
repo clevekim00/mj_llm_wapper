@@ -1,0 +1,9 @@
+{
+  "name": "MJ Local LLM Hub",
+  "short_name": "LLM Hub",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7f4",
+  "theme_color": "#0f766e",
+  "description": "장치 맞춤 로컬 LLM 설치와 대화 MVP"
+}
