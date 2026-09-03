@@ -35,9 +35,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let data_dir = std::env::var_os("MJ_HUB_DATA_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(".mj-local-llm-hub"));
-    let token = Arc::new(generate_token());
+    let token = Arc::new(match std::env::var("MJ_HUB_TOKEN") {
+        Ok(value) if value.len() >= 32 => value,
+        Ok(_) => return Err("MJ_HUB_TOKEN must contain at least 32 characters".into()),
+        Err(_) => generate_token(),
+    });
     let state = AppState {
-        runtime: OllamaRuntime::new(runtime_url),
+        runtime: Arc::new(OllamaRuntime::new(runtime_url)),
         store: Arc::new(Store::open(data_dir.join("state.json")).await?),
         token: token.clone(),
     };

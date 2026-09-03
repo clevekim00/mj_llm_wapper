@@ -59,10 +59,22 @@ pub struct ChatRequest {
 
 #[derive(Debug, Serialize)]
 pub struct RuntimeStatus {
-    pub kind: &'static str,
-    pub base_url: String,
+    pub kind: String,
+    pub endpoint_id: String,
     pub reachable: bool,
     pub installed_models: Vec<String>,
+    pub capabilities: RuntimeCapabilities,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub struct RuntimeCapabilities {
+    pub install: bool,
+    pub chat: bool,
+    pub chat_completions: bool,
+    pub streaming: bool,
+    pub structured_output: Vec<String>,
+    pub embeddings: bool,
+    pub model_details: bool,
 }
 
 #[derive(Debug, Serialize)]

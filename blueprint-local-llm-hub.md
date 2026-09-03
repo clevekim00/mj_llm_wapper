@@ -1,6 +1,6 @@
 # Local LLM Hub Codex Automation Blueprint
 > Created: 2026-08-18
-> Updated: 2026-09-01
+> Updated: 2026-09-03
 > Purpose: Codex implementation blueprint
 
 ## 0. Goals and Deliverables
@@ -106,6 +106,36 @@ Codex 구현 흐름은 요구사항과 공식 모델 메타데이터를 수집�
 | Runtime Adapter | 공통 추론 계약을 LiteRT-LM, llama.cpp 계열, MLX, 서버 엔진 등에 연결하는 계층 |
 | Project | 대화, 기본 모델, 시스템 지침, 지식베이스, MCP 정책의 격리 단위 |
 | Local-first | 데이터와 추론을 기본적으로 장치 내부에서 처리하고 외부 통신은 선택적으로 허용하는 정책 |
+| ModelRuntime | API 계층과 특정 추론 엔진 사이의 Rust 비동기 trait 계약 |
+| RuntimeEvent | 설치 진행률, 토큰, 지표, OpenAI chunk, 완료를 표현하는 런타임 독립 이벤트 |
+| Provenance | provider, endpoint, 실제 모델, digest, 지연시간, 구조화 출력 모드를 기록한 실행 근거 |
+
+### Runtime Adapter Architecture
+
+API와 UI는 특정 엔진의 URL, NDJSON, 모델 파일 형식을 직접 알지 않는다. Rust 코어의 `ModelRuntime` trait가 상태 확인, capability discovery, 설치, 대화, OpenAI Chat Completions, 모델 상세 조회를 정의한다. 어댑터는 엔진 고유 응답을 `RuntimeEvent`와 표준 `RuntimeErrorCode`로 변환하고, raw HTTP response를 API 계층에 노출하지 않는다.
+
+| Adapter | Target | Integration mode | Initial status | Responsibility |
+|---|---|---|---|---|
+| `OllamaRuntime` | PC/server compatibility | local HTTP sidecar | MVP active | 기존 Ollama 설치·채팅·OpenAI API를 공통 계약으로 정규화 |
+| `MistralRsRuntime` | PC/server primary | Rust sidecar first, embedded SDK later | planned | Rust-first inference, Metal/CUDA, server batching |
+| `LiteRtLmRuntime` | Android/iOS on-device | Kotlin/Swift/C ABI behind Rust facade | planned | 모바일 직접 추론, GPU/NPU 및 앱 lifecycle 연동 |
+| `LlamaCppRuntime` | GGUF compatibility fallback | isolated sidecar/FFI | optional | 다른 어댑터가 지원하지 않는 GGUF 아티팩트 수용 |
+
+`AppState`는 `Arc<dyn ModelRuntime>`만 보유한다. 새 어댑터는 다음 conformance suite를 통과해야 등록된다: health/list, install capability, non-stream/stream chat, cancellation, timeout, error normalization, structured output capability, provenance redaction. 런타임 선택은 향후 `RuntimeRegistry`가 플랫폼, 모델 아티팩트, 사용자 policy profile과 capability를 기준으로 수행한다. 자동 cloud fallback은 금지한다.
+
+모델 카탈로그는 장기적으로 단일 `runtime_model` 문자열에서 `runtime_variants[]`로 이전한다. 각 variant는 `runtime`, `artifact_id`, `format`, `revision`, `checksum`, `platforms`, `capabilities`, `stability`를 갖는다. 기존 필드는 마이그레이션 기간 동안 Ollama 호환 alias로 읽는다.
+
+### mj-narmer Integration Contract
+
+`mj_llm_wrapper_request.md`를 Narmer 연동 요구사항의 입력 문서로 사용한다. 책임 경계는 다음과 같다.
+
+- Gateway: 런타임 연결, OpenAI 호환 생성, 구조화 출력 검증, timeout/cancellation, 오류 정규화, provenance, 로컬/외부 실행 정책과 비밀값 마스킹.
+- mj-narmer: URL·YouTube evidence 수집, 장소 추출 prompt/schema, evidence-backed claim 검증, place resolution, 사용자 데이터 영속화.
+- Gateway는 Narmer의 장소 도메인이나 데이터베이스를 알지 않으며, Narmer는 특정 로컬 런타임 프로토콜을 알지 않는다.
+
+P0 공유 source of truth는 `contracts/openapi.yaml`이다. `POST /v1/chat/completions`는 `stream` 양쪽 모드와 `json_object`, 제한된 MVP `json_schema` 검증을 제공한다. 성공 응답의 `mj`에는 동적 provider, 비밀값이 제거된 endpoint ID, 요청/실행 모델, 가능한 digest, latency와 structured-output mode를 기록한다. 오류는 요청서에 정의된 안정적인 OpenAI error envelope code를 사용한다. `Authorization: Bearer`가 표준이며 `x-local-token`은 이전 UI 호환 기간에만 유지한다.
+
+P1은 `/v1/embeddings`, 다중 `RuntimeRegistry`, signed policy profile, 전체 JSON Schema validator를 포함한다. P2는 vision/audio adapter, load admission, queue, 비용 회계와 Responses API다.
 
 ## 2. Workflow Definition
 
@@ -164,13 +194,13 @@ Rust 코어, 런타임 어댑터, 저장소, API, 플랫폼 UI 사이의 안정�
 변경 가능성이 큰 런타임 세부 구현과 장기 유지할 도메인 계약의 경계를 판단한다.
 
 4) Code Processing Area:
-OpenAPI/JSON Schema, Rust trait signature, DB migration 규칙을 정적 검사한다.
+`ModelRuntime` object-safe 비동기 trait, 정규화된 `RuntimeEvent`/`RuntimeErrorCode`, `RuntimeRegistry`, OpenAPI/JSON Schema, DB migration 규칙을 정적 검사한다. Ollama NDJSON과 OpenAI SSE decoding은 `OllamaRuntime` 내부에서 끝내고 API에는 공통 이벤트만 전달한다.
 
 5) Success Criteria:
-클라이언트가 특정 엔진을 알지 않고도 모델 설치, 대화, RAG, MCP를 호출할 수 있고 어댑터 교체가 DB/API 변경을 강제하지 않는다.
+클라이언트가 특정 엔진을 알지 않고도 모델 설치, 대화, RAG, MCP를 호출할 수 있고 어댑터 교체가 DB/API 변경을 강제하지 않는다. mj-narmer가 `base_url=/v1`과 Bearer token만으로 비스트리밍 장소 추출을 요청하고 표준 provenance/error를 받을 수 있다.
 
 6) Validation Method:
-계약 테스트 초안, dependency direction 검사, architecture decision record의 human review.
+`contracts/openapi.yaml` 정적 검사, mock adapter conformance test, Narmer JSON fixture, dependency direction 검사, architecture decision record의 human review.
 
 7) Failure Handling:
 플랫폼별 capability가 공통 계약을 충족하지 못하면 optional capability로 격리하고 UI에서 기능을 숨긴다. 핵심 대화 계약 불충족 시 해당 어댑터 채택을 중단한다.
@@ -258,10 +288,10 @@ corrupt/truncated artifact 테스트, 디스크 부족 fault injection, checksum
 답변 생성, 대화 문맥 축약, RAG 사용 판단, MCP 도구 호출 제안, 모델 전환 시 맥락 유지 전략을 담당한다.
 
 4) Code Processing Area:
-chat template 적용, tokenizer/context budget 계산, cancellation, backpressure, persistence, retry idempotency, SSE/WebSocket 변환을 수행한다.
+chat template 적용, tokenizer/context budget 계산, cancellation, 요청별 timeout, backpressure, persistence, retry idempotency, SSE/WebSocket 변환을 수행한다. 비스트리밍 structured output은 JSON parse 후 Narmer가 사용하는 JSON Schema subset을 검증하고 실패를 `structured_output_invalid`로 반환한다.
 
 5) Success Criteria:
-대화 생성·이름 변경·검색·삭제, 메시지 수정 후 분기, 모델/로컬·Trusted Node routing 전환, 응답 중지가 가능하고 앱 재시작 후 복원된다.
+대화 생성·이름 변경·검색·삭제, 메시지 수정 후 분기, 모델/로컬·Trusted Node routing 전환, 응답 중지가 가능하고 앱 재시작 후 복원된다. OpenAI 비스트리밍 응답에는 provider, sanitized endpoint, requested/resolved model, 가능한 digest, latency, structured output mode가 포함된다.
 
 6) Validation Method:
 API contract tests, 긴 대화 context-budget tests, stream cancellation tests, golden chat-template tests, node disconnect/reconnect 및 routing failover tests.

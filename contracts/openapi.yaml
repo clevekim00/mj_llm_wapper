@@ -1,0 +1,216 @@
+openapi: 3.1.0
+info:
+  title: MJ Local LLM Gateway API
+  version: 0.1.0
+  description: Shared local model contract for mj-narmer and interactive clients.
+servers:
+  - url: http://127.0.0.1:3210
+security:
+  - bearerAuth: []
+paths:
+  /v1/chat/completions:
+    post:
+      summary: Create a streaming or completed chat response
+      operationId: createChatCompletion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+      responses:
+        '200':
+          description: OpenAI-compatible JSON response or SSE stream
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+            text/event-stream:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/GatewayError'
+        '401':
+          $ref: '#/components/responses/GatewayError'
+        '422':
+          $ref: '#/components/responses/GatewayError'
+        '502':
+          $ref: '#/components/responses/GatewayError'
+        '504':
+          $ref: '#/components/responses/GatewayError'
+  /v1/models:
+    get:
+      summary: List installed models and active runtime capabilities
+      operationId: listModels
+      responses:
+        '200':
+          description: Installed model list
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [object, data]
+                properties:
+                  object:
+                    const: list
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Model'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    ChatMessage:
+      type: object
+      required: [role, content]
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          type: string
+    ChatCompletionRequest:
+      type: object
+      required: [model, messages]
+      properties:
+        model:
+          type: string
+        messages:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+        temperature:
+          type: number
+        stream:
+          type: boolean
+          default: false
+        response_format:
+          oneOf:
+            - type: object
+              required: [type]
+              properties:
+                type:
+                  const: json_object
+            - type: object
+              required: [type, json_schema]
+              properties:
+                type:
+                  const: json_schema
+                json_schema:
+                  type: object
+                  required: [schema]
+                  properties:
+                    name:
+                      type: string
+                    strict:
+                      type: boolean
+                    schema:
+                      type: object
+        metadata:
+          type: object
+          properties:
+            purpose:
+              type: string
+            policy_profile:
+              type: string
+              enum: [local_only, external_allowed]
+            timeout_ms:
+              type: integer
+              minimum: 100
+              maximum: 600000
+    ChatCompletionResponse:
+      type: object
+      required: [model, choices, mj]
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+        usage:
+          type: object
+        mj:
+          $ref: '#/components/schemas/Provenance'
+    Provenance:
+      type: object
+      required: [provider, endpoint_id, requested_model, resolved_model, structured_output_mode, latency_ms]
+      properties:
+        provider:
+          type: string
+        endpoint_id:
+          type: string
+          description: Sanitized endpoint identity without credentials or path.
+        requested_model:
+          type: string
+        resolved_model:
+          type: [string, 'null']
+        model_digest:
+          type: [string, 'null']
+        structured_output_mode:
+          type: string
+          enum: [native, prompt_fallback, unsupported, unspecified]
+        latency_ms:
+          type: integer
+        queue_latency_ms:
+          type: [integer, 'null']
+        inference_latency_ms:
+          type: [integer, 'null']
+    Model:
+      type: object
+      required: [id, object, owned_by, mj]
+      properties:
+        id:
+          type: string
+        object:
+          const: model
+        owned_by:
+          type: string
+        mj:
+          type: object
+          required: [provider, capabilities]
+          properties:
+            provider:
+              type: string
+            capabilities:
+              type: object
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [message, type, code]
+          properties:
+            message:
+              type: string
+            type:
+              const: mj_gateway_error
+            code:
+              type: string
+              enum:
+                - runtime_unavailable
+                - model_not_installed
+                - model_not_capable
+                - invalid_request
+                - structured_output_invalid
+                - context_length_exceeded
+                - request_timeout
+                - request_cancelled
+                - rate_limited
+                - upstream_error
+  responses:
+    GatewayError:
+      description: Stable MJ gateway error envelope
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
