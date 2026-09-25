@@ -85,4 +85,50 @@ mod tests {
         );
         assert_eq!(result.first().unwrap().artifact.family, "Qwen3");
     }
+
+    #[test]
+    fn catalog_contains_official_gpt_oss_ollama_variants() {
+        let catalog = load_catalog().unwrap();
+        let twenty = catalog
+            .iter()
+            .find(|model| model.runtime_model == "gpt-oss:20b")
+            .expect("gpt-oss 20b catalog entry");
+        let one_twenty = catalog
+            .iter()
+            .find(|model| model.runtime_model == "gpt-oss:120b")
+            .expect("gpt-oss 120b catalog entry");
+
+        assert_eq!(twenty.context_tokens, 131_072);
+        assert!(twenty.capabilities.iter().any(|value| value == "text-only"));
+        assert!(twenty.capabilities.iter().any(|value| value == "tools"));
+        assert!(one_twenty.estimated_peak_ram_bytes > twenty.estimated_peak_ram_bytes);
+        assert!(
+            !twenty
+                .platforms
+                .iter()
+                .any(|value| value == "mobile-candidate")
+        );
+    }
+
+    #[test]
+    fn sixteen_gib_device_does_not_recommend_gpt_oss() {
+        let device = DeviceProfile {
+            os: "macos".into(),
+            architecture: "aarch64".into(),
+            logical_cpus: 8,
+            total_memory_bytes: Some(16 * 1024_u64.pow(3)),
+            runtime_reachable: true,
+        };
+        let result = recommend(&load_catalog().unwrap(), &device, &HashSet::new());
+
+        assert!(result.iter().any(|row| {
+            row.artifact.runtime_model == "gpt-oss:20b"
+                && matches!(row.fit.as_str(), "not-recommended" | "blocked")
+        }));
+        assert!(
+            result.iter().any(|row| {
+                row.artifact.runtime_model == "gpt-oss:120b" && row.fit == "blocked"
+            })
+        );
+    }
 }

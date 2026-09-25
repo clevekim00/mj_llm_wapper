@@ -21,7 +21,7 @@ cargo run
 ## 구현된 MVP 범위
 
 - OS, architecture, CPU, RAM 및 런타임 연결 진단
-- Qwen3, DeepSeek-R1, Gemma 4, Mistral Small 3, Phi-4 Mini catalog
+- Qwen3, DeepSeek-R1, Gemma 4, Mistral Small 3, Phi-4 Mini 및 OpenAI gpt-oss catalog
 - 메모리 안전 여유를 반영한 deterministic 추천
 - Ollama의 재개 가능한 pull stream을 이용한 모델 설치 진행률
 - 멀티턴 스트리밍 대화와 JSON atomic persistence
@@ -46,6 +46,21 @@ cargo run
 | mistral.rs | PC/server | planned | 예정 | 예정 | capability 검증 예정 | 예정 |
 | LiteRT-LM | Android/iOS | planned | 예정 | 예정 | 모델별 판정 예정 | 예정 |
 | llama.cpp | GGUF fallback | optional | 예정 | 예정 | 모델별 판정 예정 | 예정 |
+
+### OpenAI gpt-oss
+
+OpenAI의 Apache 2.0 오픈 웨이트 추론 모델 두 종류를 Ollama 어댑터에서 지원한다.
+
+| 모델 | Ollama tag | 공식 권장 메모리 | 프로젝트 동작 |
+|---|---|---:|---|
+| gpt-oss-20b | `gpt-oss:20b` | 16GB 이상 VRAM 또는 통합 메모리 | 모델 센터에서 장치 적합성 확인 후 설치·대화 |
+| gpt-oss-120b | `gpt-oss:120b` | 60GB 이상 VRAM 또는 통합 메모리 | 고메모리 워크스테이션·서버에서 설치·대화 |
+
+두 모델은 텍스트 전용이며 128K context, reasoning effort, function calling과 structured output을 지원한다. Ollama가 Harmony prompt format을 적용하므로 별도 prompt template 없이 기존 `OllamaRuntime`의 설치·채팅·OpenAI-compatible API 경로를 재사용한다. 장치 추천기는 운영체제와 context 여유를 남기기 위해 공식 최소 실행 메모리보다 보수적으로 판정한다. gpt-oss는 OpenAI API나 ChatGPT에서 제공되는 모델이 아니라 사용자가 직접 내려받아 로컬 런타임에서 실행하는 모델이다.
+
+- [OpenAI gpt-oss 소개](https://openai.com/index/introducing-gpt-oss/)
+- [OpenAI 공식 Ollama 실행 가이드](https://developers.openai.com/cookbook/articles/gpt-oss/run-locally-ollama)
+- [OpenAI gpt-oss 모델 카드](https://openai.com/index/gpt-oss-model-card/)
 
 새 어댑터는 `status`, `capabilities`, `install`, `chat`, `chat_completion`, `model_details`를 구현하고 모든 엔진 고유 오류를 안정적인 gateway 오류 코드로 변환해야 한다. 상세 설계는 [`blueprint-local-llm-hub.md`](blueprint-local-llm-hub.md), 외부 계약은 [`contracts/openapi.yaml`](contracts/openapi.yaml)에 있다.
 

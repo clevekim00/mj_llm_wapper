@@ -6,7 +6,7 @@
 ## 0. Goals and Deliverables
 
 ### Primary Goal
-PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행하고, 같은 대화 UI에서 RAG와 MCP 도구를 프로젝트별로 연결할 수 있는 로컬 우선(Local-first) 플랫폼을 설계한다. 초기 필수 모델군은 영상에서 확인한 Qwen3, DeepSeek-R1 Distill 7B, Gemma 4, Mistral Small 3, Phi-4 Mini이며, 특정 revision을 코드에 고정하지 않고 모델 카탈로그로 갱신한다.
+PC, 서버, Android, iOS에서 사용자가 로컬 LLM을 검색·설치·실행하고, 같은 대화 UI에서 RAG와 MCP 도구를 프로젝트별로 연결할 수 있는 로컬 우선(Local-first) 플랫폼을 설계한다. 초기 필수 모델군은 영상에서 확인한 Qwen3, DeepSeek-R1 Distill 7B, Gemma 4, Mistral Small 3, Phi-4 Mini이며, PC·서버용 OpenAI gpt-oss 20B/120B도 지원한다. 특정 revision을 코드에 고정하지 않고 모델 카탈로그로 갱신한다.
 
 ### Success Definition
 - 사용자가 10분 이내에 장치 진단부터 권장 모델 설치, 첫 스트리밍 대화까지 완료한다.
@@ -546,6 +546,7 @@ skill-creator가 보장하는 규격:
 | Gemma 4 | official deployable E2B/E4B artifact | LiteRT-LM, GGUF where verified | Required | Required for a verified small variant | modality and accelerator capability |
 | Mistral Small 3 | 24B Instruct pinned artifact | GGUF, server adapter | Required | Explicitly unsupported in v1 unless gate passes | retired lifecycle badge, successor hint |
 | Phi-4 Mini | 3.8B Instruct pinned artifact | GGUF, LiteRT-LM where verified | Required | Required for a verified quant | safe context cap, function calling capability |
+| OpenAI gpt-oss | 20B/120B official MXFP4 artifacts | Ollama, vLLM/server adapter where verified | Supported | Unsupported in v1 | text-only, Harmony format, reasoning effort, tool/structured-output conformance |
 
 각 cell은 `supported`, `experimental`, `blocked`, `retired-compatible`, `unverified` 중 하나와 검증 날짜를 가져야 한다. 모델 family 지원과 개별 artifact 지원을 분리하고, community quant는 checksum과 재현 benchmark가 없으면 `Verified`로 승격하지 않는다.
 

@@ -68,5 +68,33 @@
     "platforms": ["desktop", "server", "mobile-candidate"],
     "lifecycle": "verified-runtime-tag",
     "source_url": "https://ollama.com/library/phi4-mini"
+  },
+  {
+    "id": "gpt-oss-20b-mxfp4",
+    "family": "OpenAI gpt-oss",
+    "display_name": "OpenAI gpt-oss 20B",
+    "runtime_model": "gpt-oss:20b",
+    "parameter_label": "21B / 3.6B active",
+    "download_bytes": 14000000000,
+    "estimated_peak_ram_bytes": 16106127360,
+    "context_tokens": 131072,
+    "capabilities": ["chat", "reasoning", "tools", "structured-output", "text-only", "open-weight"],
+    "platforms": ["desktop", "server"],
+    "lifecycle": "verified-runtime-tag",
+    "source_url": "https://developers.openai.com/cookbook/articles/gpt-oss/run-locally-ollama"
+  },
+  {
+    "id": "gpt-oss-120b-mxfp4",
+    "family": "OpenAI gpt-oss",
+    "display_name": "OpenAI gpt-oss 120B",
+    "runtime_model": "gpt-oss:120b",
+    "parameter_label": "117B / 5.1B active",
+    "download_bytes": 65000000000,
+    "estimated_peak_ram_bytes": 85899345920,
+    "context_tokens": 131072,
+    "capabilities": ["chat", "reasoning", "tools", "structured-output", "text-only", "open-weight"],
+    "platforms": ["desktop", "server"],
+    "lifecycle": "verified-runtime-tag",
+    "source_url": "https://developers.openai.com/cookbook/articles/gpt-oss/run-locally-ollama"
   }
 ]

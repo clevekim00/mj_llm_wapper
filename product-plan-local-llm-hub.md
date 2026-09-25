@@ -51,6 +51,7 @@
 | DeepSeek-R1 | Distill-Qwen-7B | 수학·논리·단계적 추론 | 고사양 모바일 조건부/PC/서버 | reasoning output | thinking content 표시·숨김 정책 필요 |
 | Gemma 4 | E2B/E4B 및 검증 variant | 모바일 일반 대화·멀티모달 | 모바일/PC/서버 | vision 등 variant별 modality | LiteRT-LM 우선, iOS/Android capability 별도 검증 |
 | Mistral Small 3 | 24B Instruct | RAG·agent·다국어 호환 | PC GPU/서버 | function calling, 32K context | retired 호환 모델로 표시, 모바일 설치 차단 |
+| OpenAI gpt-oss | 20B, 120B MXFP4 | 로컬 reasoning·agent·구조화 출력 | 고메모리 PC/서버 | text-only, tools, structured output, 128K context | 20B는 16GB+, 120B는 60GB+ 공식 기준과 안전 여유를 적용 |
 | Phi-4 Mini | 3.8B Instruct | 경량 추론·CPU fallback | 모바일/PC/서버 | 128K 선언 context, function calling | 실제 context는 장치 메모리에 맞게 제한 |
 
 ### 지원의 정의
