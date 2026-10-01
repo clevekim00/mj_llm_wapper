@@ -1,5 +1,6 @@
 use mj_local_llm_hub::{
     api::{AppState, generate_token, router},
+    cli::{self, Command},
     runtime::OllamaRuntime,
     store::Store,
 };
@@ -19,6 +20,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )
         .init();
 
+    let command = cli::parse(std::env::args().skip(1))?;
+    let runtime_url =
+        std::env::var("OLLAMA_HOST").unwrap_or_else(|_| "http://127.0.0.1:11434".into());
+    if command != Command::Serve {
+        return cli::run(command, runtime_url).await;
+    }
+    serve(runtime_url).await
+}
+
+async fn serve(runtime_url: String) -> Result<(), Box<dyn std::error::Error>> {
     let port = std::env::var("MJ_HUB_PORT")
         .ok()
         .and_then(|value| value.parse().ok())
@@ -30,8 +41,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     if !bind_ip.is_loopback() {
         return Err("MVP는 loopback 바인딩만 허용합니다. Trusted Node 보안 계층 구현 후 LAN을 활성화하세요.".into());
     }
-    let runtime_url =
-        std::env::var("OLLAMA_HOST").unwrap_or_else(|_| "http://127.0.0.1:11434".into());
     let data_dir = std::env::var_os("MJ_HUB_DATA_DIR")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from(".mj-local-llm-hub"));

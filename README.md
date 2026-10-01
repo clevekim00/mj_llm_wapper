@@ -1,5 +1,17 @@
 # MJ Local LLM Hub MVP
 
+> 🌐 [다국어 문서 허브 / Multilingual docs / 多言語文書 / Plurlingvaj dokumentoj](docs/index.html) · [ELI5 사용자 가이드](docs/user-guide.html)
+
+## 다국어 문서
+
+사용자 대상 문서는 `docs/localized/`에 한국어(`_ko`), 영어(`_en`), 일본어(`_jp`), 에스페란토어(`_es`) 판으로 제공한다. 여기서 `_es`는 이 프로젝트의 요청 규칙에 따라 스페인어가 아니라 **에스페란토어**를 뜻한다. [문서 허브](docs/index.html)와 [ELI5 사용자 가이드](docs/user-guide.html)는 페이지 안의 탭으로 언어를 바꾸며, 마지막 선택을 브라우저에 기억한다.
+
+원본 기술 문서는 상세한 기준 문서이고, 언어판은 핵심 결정·제약·명령·참조 링크를 보존한 읽기 쉬운 판이다. 언어판과 HTML 페이지는 다음 명령으로 다시 생성한다.
+
+```bash
+python3 scripts/generate_localized_docs.py
+```
+
 장치에 맞는 로컬 모델을 추천하고 설치한 뒤 같은 화면에서 스트리밍 대화를 나누는 Rust 기반 MVP다. API는 특정 엔진과 분리된 `ModelRuntime` 어댑터를 사용한다. 현재 활성 어댑터는 로컬 [Ollama](https://ollama.com/)이며 서버는 loopback 주소만 허용한다.
 
 ## 실행
@@ -17,6 +29,27 @@ cargo run
 
 브라우저에서 `http://127.0.0.1:3210`을 연다. 다른 포트는 `MJ_HUB_PORT`, 다른 로컬 Ollama 주소는 `OLLAMA_HOST`로 지정할 수 있다.
 서비스 간 통합 테스트에서는 32자 이상의 `MJ_HUB_TOKEN`을 지정해 고정 Bearer token을 사용할 수 있다. 지정하지 않으면 기존처럼 실행마다 임의 token이 생성된다.
+
+## 명령줄 추천 및 설치
+
+웹 UI를 열지 않고도 현재 CPU·RAM과 Ollama 설치 상태를 확인해 모델을 추천하고 설치할 수 있다.
+
+```bash
+# 장치에 맞는 전체 추천 목록
+cargo run -- recommend
+
+# 스크립트에서 사용할 JSON 결과
+cargo run -- recommend --json
+
+# 모델 ID 또는 Ollama tag로 설치
+cargo run -- install qwen3-0.6b-q4
+cargo run -- install gpt-oss:20b
+
+# 가장 적합한 미설치 모델을 자동 선택
+cargo run -- auto-install
+```
+
+설치 명령은 모델명, 다운로드 크기, 예상 peak RAM과 적합도를 보여준 뒤 확인을 받는다. CI나 무인 설치에서는 `--yes` 또는 `-y`로 확인을 생략할 수 있다. `blocked` 모델은 기본적으로 거부하며 사용자가 위험을 이해하고 `--force`를 지정한 경우에만 설치를 시도한다. Ollama가 꺼져 있어도 `recommend`는 하드웨어 적합도를 계산하지만 실제 설치 전에는 `ollama serve`가 필요하다.
 
 ## 구현된 MVP 범위
 
