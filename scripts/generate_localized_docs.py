@@ -193,10 +193,10 @@ def markdown(doc, code):
         "",
         "---",
         "",
-        "[" + {"ko": "탭으로 읽기", "en": "Read with tabs", "jp": "タブで読む", "es": "Legi per langetoj"}[code] + f"](../reader/{doc['slug']}.html#lang={code})",
+        "[" + {"ko": "페이지에서 읽기", "en": "Read on the page", "jp": "ページで読む", "es": "Legi en la paĝo"}[code] + "](" + ("../../README.md" if doc["slug"] == "README" else f"../reader/{doc['slug']}.html#lang={code}") + ")",
         "",
         {"ko": "다른 언어", "en": "Other languages", "jp": "他の言語", "es": "Aliaj lingvoj"}[code] + ": " + " · ".join(
-            f"[{LANGS[other]['label']}](../reader/{doc['slug']}.html#lang={other})" for other in LANGS
+            f"[{LANGS[other]['label']}]({('../../README.md' if doc['slug'] == 'README' else f'../reader/{doc["slug"]}.html#lang={other}')})" for other in LANGS
         ),
         "",
     ]
@@ -211,10 +211,11 @@ for doc in DOCS:
 def language_panel(code):
     cards = []
     for doc in DOCS:
+        href = "../README.md" if doc["slug"] == "README" else f"reader/{doc['slug']}.html#lang={code}"
         cards.append(
             f'''<article class="doc-card"><span>📘</span><div><h3>{escape(doc["title"][code])}</h3>
             <p>{escape(doc["summary"][code])}</p>
-            <a href="reader/{doc['slug']}.html#lang={code}">{escape({"ko":"문서 열기","en":"Open document","jp":"文書を開く","es":"Malfermi dokumenton"}[code])} →</a></div></article>'''
+            <a href="{href}">{escape({"ko":"문서 열기","en":"Open document","jp":"文書を開く","es":"Malfermi dokumenton"}[code])} →</a></div></article>'''
         )
     return "\n".join(cards)
 
@@ -259,7 +260,7 @@ def reader_panel(doc, code, first):
     </section>'''
 
 
-for doc in DOCS:
+for doc in (item for item in DOCS if item["slug"] != "README"):
     reader_panels = "".join(reader_panel(doc, code, i == 0) for i, code in enumerate(LANGS))
     (READER / f"{doc['slug']}.html").write_text(
         f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(doc['title']['en'])} · MJ Local LLM Hub</title><style>{STYLE}</style></head><body><main><header class="hero"><img src="../assets/mj-local-llm-hub-logo.png" alt="MJ Local LLM Hub"><p>MJ Local LLM Hub Documentation</p></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{reader_panels}</div></main><script>{SCRIPT}</script></body></html>''',
@@ -279,4 +280,4 @@ guide_panels = "".join(
 guide_style = STYLE + ".content{text-align:center}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.steps article{background:#0d141b;border:1px solid #2c3945;border-radius:14px;padding:26px}.steps h2{font-size:1.25rem}.steps code{display:block;background:#061018;color:#fff;padding:10px;border-radius:7px;overflow:auto}.tip{font-size:1.25rem;font-weight:850;background:#12343a;color:#baf8ff;border-radius:12px;padding:20px;margin-top:18px}@media(max-width:700px){.steps{grid-template-columns:1fr}}"
 (ROOT / "docs" / "user-guide.html").write_text(f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MJ Local LLM Hub ELI5 Guide</title><style>{guide_style}</style></head><body><main><header class="hero"><img src="assets/mj-local-llm-hub-logo.png" alt="MJ Local LLM Hub"><h1>ELI5</h1><p>Local AI, explained simply.</p></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{guide_panels}<div class="guide"><a href="index.html">Documentation</a></div></div></main><script>{SCRIPT}</script></body></html>''', encoding="utf-8")
 
-print(f"Generated {len(DOCS) * len(LANGS)} Markdown editions, {len(DOCS)} tabbed readers, and two HTML hubs")
+print(f"Generated {len(DOCS) * len(LANGS)} Markdown editions, {len(DOCS) - 1} tabbed readers, and two HTML hubs")

@@ -18,6 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-[Read with tabs](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=en)
+[Read on the page](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=en)
 
 Other languages: [한국어](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=ko) · [English](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=en) · [日本語](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=jp) · [Esperanto](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=es)

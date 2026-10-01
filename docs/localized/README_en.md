@@ -18,6 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-[Read with tabs](../reader/README.html#lang=en)
+[Read on the page](../../README.md)
 
-Other languages: [한국어](../reader/README.html#lang=ko) · [English](../reader/README.html#lang=en) · [日本語](../reader/README.html#lang=jp) · [Esperanto](../reader/README.html#lang=es)
+Other languages: [한국어](../../README.md) · [English](../../README.md) · [日本語](../../README.md) · [Esperanto](../../README.md)

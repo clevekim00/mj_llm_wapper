@@ -18,6 +18,6 @@ La defaŭltoj estas loka-unua funkciado, sekura memorrezervo, validigitaj artefa
 
 ---
 
-[Legi per langetoj](../reader/video-research-local-llm-guides.html#lang=es)
+[Legi en la paĝo](../reader/video-research-local-llm-guides.html#lang=es)
 
 Aliaj lingvoj: [한국어](../reader/video-research-local-llm-guides.html#lang=ko) · [English](../reader/video-research-local-llm-guides.html#lang=en) · [日本語](../reader/video-research-local-llm-guides.html#lang=jp) · [Esperanto](../reader/video-research-local-llm-guides.html#lang=es)

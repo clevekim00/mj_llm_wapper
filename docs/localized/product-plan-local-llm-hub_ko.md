@@ -18,6 +18,6 @@ PC·서버·모바일에서 오픈 웨이트 모델을 쉽게 찾고 설치하�
 
 ---
 
-[탭으로 읽기](../reader/product-plan-local-llm-hub.html#lang=ko)
+[페이지에서 읽기](../reader/product-plan-local-llm-hub.html#lang=ko)
 
 다른 언어: [한국어](../reader/product-plan-local-llm-hub.html#lang=ko) · [English](../reader/product-plan-local-llm-hub.html#lang=en) · [日本語](../reader/product-plan-local-llm-hub.html#lang=jp) · [Esperanto](../reader/product-plan-local-llm-hub.html#lang=es)

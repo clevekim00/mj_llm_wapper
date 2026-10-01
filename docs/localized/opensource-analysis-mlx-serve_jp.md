@@ -18,6 +18,6 @@ Mac優先のローカルAIハブmlx-serveから採用すべきパターンと、
 
 ---
 
-[タブで読む](../reader/opensource-analysis-mlx-serve.html#lang=jp)
+[ページで読む](../reader/opensource-analysis-mlx-serve.html#lang=jp)
 
 他の言語: [한국어](../reader/opensource-analysis-mlx-serve.html#lang=ko) · [English](../reader/opensource-analysis-mlx-serve.html#lang=en) · [日本語](../reader/opensource-analysis-mlx-serve.html#lang=jp) · [Esperanto](../reader/opensource-analysis-mlx-serve.html#lang=es)

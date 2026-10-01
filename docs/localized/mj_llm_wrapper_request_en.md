@@ -18,6 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-[Read with tabs](../reader/mj_llm_wrapper_request.html#lang=en)
+[Read on the page](../reader/mj_llm_wrapper_request.html#lang=en)
 
 Other languages: [한국어](../reader/mj_llm_wrapper_request.html#lang=ko) · [English](../reader/mj_llm_wrapper_request.html#lang=en) · [日本語](../reader/mj_llm_wrapper_request.html#lang=jp) · [Esperanto](../reader/mj_llm_wrapper_request.html#lang=es)

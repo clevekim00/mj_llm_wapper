@@ -18,6 +18,6 @@ Rust制御層、ランタイムアダプター、モデルカタログ、メモ�
 
 ---
 
-[タブで読む](../reader/blueprint-local-llm-hub.html#lang=jp)
+[ページで読む](../reader/blueprint-local-llm-hub.html#lang=jp)
 
 他の言語: [한국어](../reader/blueprint-local-llm-hub.html#lang=ko) · [English](../reader/blueprint-local-llm-hub.html#lang=en) · [日本語](../reader/blueprint-local-llm-hub.html#lang=jp) · [Esperanto](../reader/blueprint-local-llm-hub.html#lang=es)

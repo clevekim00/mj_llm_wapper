@@ -18,6 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-[Read with tabs](../reader/video-research-local-llm-guides.html#lang=en)
+[Read on the page](../reader/video-research-local-llm-guides.html#lang=en)
 
 Other languages: [한국어](../reader/video-research-local-llm-guides.html#lang=ko) · [English](../reader/video-research-local-llm-guides.html#lang=en) · [日本語](../reader/video-research-local-llm-guides.html#lang=jp) · [Esperanto](../reader/video-research-local-llm-guides.html#lang=es)

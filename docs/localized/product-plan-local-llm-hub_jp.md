@@ -18,6 +18,6 @@ PC・サーバー・モバイルでオープンウェイトモデルを探して
 
 ---
 
-[タブで読む](../reader/product-plan-local-llm-hub.html#lang=jp)
+[ページで読む](../reader/product-plan-local-llm-hub.html#lang=jp)
 
 他の言語: [한국어](../reader/product-plan-local-llm-hub.html#lang=ko) · [English](../reader/product-plan-local-llm-hub.html#lang=en) · [日本語](../reader/product-plan-local-llm-hub.html#lang=jp) · [Esperanto](../reader/product-plan-local-llm-hub.html#lang=es)

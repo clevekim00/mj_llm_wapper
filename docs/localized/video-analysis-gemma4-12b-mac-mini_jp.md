@@ -18,6 +18,6 @@
 
 ---
 
-[タブで読む](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=jp)
+[ページで読む](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=jp)
 
 他の言語: [한국어](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=ko) · [English](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=en) · [日本語](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=jp) · [Esperanto](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=es)

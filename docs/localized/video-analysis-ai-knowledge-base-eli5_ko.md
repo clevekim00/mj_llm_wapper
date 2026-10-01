@@ -18,6 +18,6 @@
 
 ---
 
-[탭으로 읽기](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=ko)
+[페이지에서 읽기](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=ko)
 
 다른 언어: [한국어](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=ko) · [English](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=en) · [日本語](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=jp) · [Esperanto](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=es)

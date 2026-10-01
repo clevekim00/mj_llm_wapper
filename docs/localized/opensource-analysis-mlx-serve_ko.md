@@ -18,6 +18,6 @@ Mac 우선 로컬 AI 허브인 mlx-serve에서 채택할 패턴과 그대로 복
 
 ---
 
-[탭으로 읽기](../reader/opensource-analysis-mlx-serve.html#lang=ko)
+[페이지에서 읽기](../reader/opensource-analysis-mlx-serve.html#lang=ko)
 
 다른 언어: [한국어](../reader/opensource-analysis-mlx-serve.html#lang=ko) · [English](../reader/opensource-analysis-mlx-serve.html#lang=en) · [日本語](../reader/opensource-analysis-mlx-serve.html#lang=jp) · [Esperanto](../reader/opensource-analysis-mlx-serve.html#lang=es)

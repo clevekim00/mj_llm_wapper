@@ -18,6 +18,6 @@
 
 ---
 
-[タブで読む](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=jp)
+[ページで読む](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=jp)
 
 他の言語: [한국어](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=ko) · [English](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=en) · [日本語](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=jp) · [Esperanto](../reader/video-analysis-ai-knowledge-base-eli5.html#lang=es)

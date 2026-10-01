@@ -1,163 +1,142 @@
 <div align="center">
   <img src="docs/assets/mj-local-llm-hub-logo.png" width="132" alt="MJ Local LLM Hub logo">
   <h1>MJ Local LLM Hub</h1>
-  <h3>내 장치에 맞는 오픈 웨이트 LLM을 찾고, 설치하고, 바로 대화하세요.</h3>
-  <p>Local-first model installer, chat, RAG &amp; MCP hub for PC, server and mobile.</p>
-  <p>
-    <a href="docs/reader/README.html#lang=ko"><kbd>한국어</kbd></a>&nbsp;
-    <a href="docs/reader/README.html#lang=en"><kbd>English</kbd></a>&nbsp;
-    <a href="docs/reader/README.html#lang=jp"><kbd>日本語</kbd></a>&nbsp;
-    <a href="docs/reader/README.html#lang=es"><kbd>Esperanto</kbd></a>
-  </p>
-  <p>
-    <a href="docs/index.html"><strong>다국어 문서 허브</strong></a>
-    &nbsp;·&nbsp;
-    <a href="docs/user-guide.html"><strong>ELI5 쉬운 사용자 가이드</strong></a>
-  </p>
+  <p><strong>Find, install, and chat with an open-weight LLM that fits your device.</strong></p>
+  <p>PC · Server · Mobile · Local-first</p>
 </div>
 
 ---
 
-## 언어 선택
+<p align="center"><strong>언어를 눌러 펼쳐 보세요 · Select a language · 言語を選択 · Elektu lingvon</strong></p>
 
-위 언어 버튼은 README 전용 탭 페이지를 선택한 언어로 연다. 다른 사용자 문서도 [다국어 문서 허브](docs/index.html)에서 열면 페이지를 벗어나지 않고 한국어, 영어, 일본어, 에스페란토어 탭으로 바꿔 읽을 수 있다. `_es`는 이 프로젝트의 파일명 규칙에서 **에스페란토어**를 뜻한다.
+<details open>
+<summary><strong>한국어</strong></summary>
 
-원본 기술 문서는 상세 기준 문서이며 `docs/localized/`의 `_ko`, `_en`, `_jp`, `_es` 파일은 읽기 쉬운 언어별 판이다. 전체 언어판과 탭 페이지는 `python3 scripts/generate_localized_docs.py`로 다시 생성한다.
+### 소개
 
-장치에 맞는 로컬 모델을 추천하고 설치한 뒤 같은 화면에서 스트리밍 대화를 나누는 Rust 기반 MVP다. API는 특정 엔진과 분리된 `ModelRuntime` 어댑터를 사용한다. 현재 활성 어댑터는 로컬 [Ollama](https://ollama.com/)이며 서버는 loopback 주소만 허용한다.
+MJ Local LLM Hub는 컴퓨터 사양을 확인하고 알맞은 오픈 웨이트 LLM을 추천하여 설치와 대화까지 이어 주는 Rust 기반 도구입니다. 현재 MVP는 Ollama를 사용하며 Qwen, Gemma, DeepSeek, Phi, Mistral과 OpenAI gpt-oss 모델을 지원합니다.
 
-## 실행
+### 설치와 실행
 
-요구사항:
-
-- Rust 1.85 이상
-- 로컬에서 실행 중인 Ollama
-- 모델 다운로드를 위한 저장공간과 네트워크
+Rust 1.85 이상과 [Ollama](https://ollama.com/)가 필요합니다.
 
 ```bash
 ollama serve
 cargo run
 ```
 
-브라우저에서 `http://127.0.0.1:3210`을 연다. 다른 포트는 `MJ_HUB_PORT`, 다른 로컬 Ollama 주소는 `OLLAMA_HOST`로 지정할 수 있다.
-서비스 간 통합 테스트에서는 32자 이상의 `MJ_HUB_TOKEN`을 지정해 고정 Bearer token을 사용할 수 있다. 지정하지 않으면 기존처럼 실행마다 임의 token이 생성된다.
+브라우저에서 `http://127.0.0.1:3210`을 엽니다.
 
-## 명령줄 추천 및 설치
-
-웹 UI를 열지 않고도 현재 CPU·RAM과 Ollama 설치 상태를 확인해 모델을 추천하고 설치할 수 있다.
+### 명령줄 사용법
 
 ```bash
-# 장치에 맞는 전체 추천 목록
+# 내 시스템에 맞는 모델 추천
 cargo run -- recommend
 
-# 스크립트에서 사용할 JSON 결과
-cargo run -- recommend --json
-
-# 모델 ID 또는 Ollama tag로 설치
-cargo run -- install qwen3-0.6b-q4
-cargo run -- install gpt-oss:20b
-
-# 가장 적합한 미설치 모델을 자동 선택
+# 추천 모델 자동 설치
 cargo run -- auto-install
 ```
 
-설치 명령은 모델명, 다운로드 크기, 예상 peak RAM과 적합도를 보여준 뒤 확인을 받는다. CI나 무인 설치에서는 `--yes` 또는 `-y`로 확인을 생략할 수 있다. `blocked` 모델은 기본적으로 거부하며 사용자가 위험을 이해하고 `--force`를 지정한 경우에만 설치를 시도한다. Ollama가 꺼져 있어도 `recommend`는 하드웨어 적합도를 계산하지만 실제 설치 전에는 `ollama serve`가 필요하다.
+- [아주 쉬운 사용자 가이드](docs/user-guide.html#lang=ko)
+- [상세 문서](docs/index.html#lang=ko)
 
-## 구현된 MVP 범위
+</details>
 
-- OS, architecture, CPU, RAM 및 런타임 연결 진단
-- Qwen3, DeepSeek-R1, Gemma 4, Mistral Small 3, Phi-4 Mini 및 OpenAI gpt-oss catalog
-- 메모리 안전 여유를 반영한 deterministic 추천
-- Ollama의 재개 가능한 pull stream을 이용한 모델 설치 진행률
-- 멀티턴 스트리밍 대화와 JSON atomic persistence
-- 최근 대화 복원과 삭제 API
-- 설치된 모델을 반환하는 OpenAI 형식 `/v1/models` subset
-- OpenAI-compatible `/v1/chat/completions` proxy (stream/non-stream)
-- Bearer/local token 인증, 표준 gateway 오류와 비스트리밍 provenance metadata
-- Ollama 모델 capability 조회 `/api/models/{model}/details`
-- object-safe `ModelRuntime` trait와 설치·토큰·지표·OpenAI chunk 공통 이벤트
-- 런타임 독립 오류 코드 및 동적 provider/endpoint/model provenance
-- mj-narmer용 `json_object` 및 기본 `json_schema` 구조화 출력 검증
-- mj-narmer 공유 API 계약 `contracts/openapi.yaml`
-- responsive PWA UI, loopback-only bind, per-launch local token
+<details>
+<summary><strong>English</strong></summary>
 
-## 런타임 어댑터
+### Introduction
 
-`AppState`는 `Arc<dyn ModelRuntime>`만 참조한다. Ollama의 `/api/pull`, `/api/chat` NDJSON과 `/v1/chat/completions` SSE 해석은 `OllamaRuntime` 안에서 수행되며 API 계층에는 정규화된 이벤트만 전달된다.
+MJ Local LLM Hub is a Rust tool that checks your computer, recommends a fitting open-weight LLM, installs it, and lets you chat with it. The MVP currently uses Ollama and supports Qwen, Gemma, DeepSeek, Phi, Mistral, and OpenAI gpt-oss models.
 
-| Provider | 대상 | 상태 | 설치 | Chat | Structured output | Embeddings |
-|---|---|---|---:|---:|---:|---:|
-| Ollama | PC/server | MVP active | 지원 | 지원 | `json_object`, 기본 `json_schema` | 미구현 |
-| mistral.rs | PC/server | planned | 예정 | 예정 | capability 검증 예정 | 예정 |
-| LiteRT-LM | Android/iOS | planned | 예정 | 예정 | 모델별 판정 예정 | 예정 |
-| llama.cpp | GGUF fallback | optional | 예정 | 예정 | 모델별 판정 예정 | 예정 |
+### Install and run
 
-### OpenAI gpt-oss
-
-OpenAI의 Apache 2.0 오픈 웨이트 추론 모델 두 종류를 Ollama 어댑터에서 지원한다.
-
-| 모델 | Ollama tag | 공식 권장 메모리 | 프로젝트 동작 |
-|---|---|---:|---|
-| gpt-oss-20b | `gpt-oss:20b` | 16GB 이상 VRAM 또는 통합 메모리 | 모델 센터에서 장치 적합성 확인 후 설치·대화 |
-| gpt-oss-120b | `gpt-oss:120b` | 60GB 이상 VRAM 또는 통합 메모리 | 고메모리 워크스테이션·서버에서 설치·대화 |
-
-두 모델은 텍스트 전용이며 128K context, reasoning effort, function calling과 structured output을 지원한다. Ollama가 Harmony prompt format을 적용하므로 별도 prompt template 없이 기존 `OllamaRuntime`의 설치·채팅·OpenAI-compatible API 경로를 재사용한다. 장치 추천기는 운영체제와 context 여유를 남기기 위해 공식 최소 실행 메모리보다 보수적으로 판정한다. gpt-oss는 OpenAI API나 ChatGPT에서 제공되는 모델이 아니라 사용자가 직접 내려받아 로컬 런타임에서 실행하는 모델이다.
-
-- [OpenAI gpt-oss 소개](https://openai.com/index/introducing-gpt-oss/)
-- [OpenAI 공식 Ollama 실행 가이드](https://developers.openai.com/cookbook/articles/gpt-oss/run-locally-ollama)
-- [OpenAI gpt-oss 모델 카드](https://openai.com/index/gpt-oss-model-card/)
-
-새 어댑터는 `status`, `capabilities`, `install`, `chat`, `chat_completion`, `model_details`를 구현하고 모든 엔진 고유 오류를 안정적인 gateway 오류 코드로 변환해야 한다. 상세 설계는 [`blueprint-local-llm-hub.md`](blueprint-local-llm-hub.md), 외부 계약은 [`contracts/openapi.yaml`](contracts/openapi.yaml)에 있다.
-
-## mj-narmer 연동
-
-Narmer의 OpenAI-compatible client에는 base URL을 `http://127.0.0.1:3210/v1`로 설정하고 `MJ_HUB_TOKEN`을 Bearer token으로 전달한다.
+You need Rust 1.85 or newer and [Ollama](https://ollama.com/).
 
 ```bash
-curl http://127.0.0.1:3210/v1/chat/completions \
-  -H 'Authorization: Bearer <MJ_HUB_TOKEN>' \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "model": "gemma4:e2b-it-qat",
-    "messages": [{"role": "user", "content": "Return {\"places\":[]}"}],
-    "stream": false,
-    "response_format": {
-      "type": "json_schema",
-      "json_schema": {
-        "name": "place_extraction",
-        "strict": true,
-        "schema": {
-          "type": "object",
-          "required": ["places"],
-          "properties": {"places": {"type": "array"}}
-        }
-      }
-    },
-    "metadata": {"purpose": "place_extraction", "policy_profile": "local_only", "timeout_ms": 120000}
-  }'
+ollama serve
+cargo run
 ```
 
-비스트리밍 성공 응답의 `mj` 필드에는 provider, credential/path를 제거한 endpoint ID, 요청/실행 모델, 가능한 digest, latency와 structured-output mode가 포함된다. `metadata`는 gateway 정책에만 사용하고 upstream 모델에는 전달하지 않는다. 현재 JSON Schema 검증은 Narmer MVP에 필요한 `type`, `required`, `properties`, `items` subset이며 전체 표준 validator는 후속 작업이다.
+Open `http://127.0.0.1:3210` in your browser.
 
-표준 오류 코드는 `runtime_unavailable`, `model_not_installed`, `model_not_capable`, `invalid_request`, `structured_output_invalid`, `context_length_exceeded`, `request_timeout`, `request_cancelled`, `rate_limited`, `upstream_error`다.
-
-## 아직 구현하지 않은 출시 게이트
-
-- Android/iOS 네이티브 온디바이스 inference adapter
-- 모델 artifact 자체 checksum/signature 검증과 독립 model store
-- Responses 및 Anthropic adapter
-- `/v1/embeddings`와 전체 JSON Schema validator
-- 다중 runtime registry와 자동 장치별 adapter 선택
-- RAG, MCP, Trusted Node
-- load/unload/refcount/LRU memory admission
-- macOS Keychain 기반 장기 client credential 발급
-
-따라서 이 저장소는 Phase 1의 수직 MVP이며 전체 제품 출시판은 아니다.
-
-## 검증
+### Command-line usage
 
 ```bash
-cargo fmt --check
-cargo test
-cargo clippy --all-targets -- -D warnings
+# Recommend models for this system
+cargo run -- recommend
+
+# Install the recommended model
+cargo run -- auto-install
 ```
+
+- [Very easy user guide](docs/user-guide.html#lang=en)
+- [Detailed documentation](docs/index.html#lang=en)
+
+</details>
+
+<details>
+<summary><strong>日本語</strong></summary>
+
+### 紹介
+
+MJ Local LLM Hubは、パソコンの仕様を確認し、適切なオープンウェイトLLMを推薦して、インストールから会話まで案内するRust製ツールです。現在のMVPはOllamaを使用し、Qwen、Gemma、DeepSeek、Phi、Mistral、OpenAI gpt-ossに対応します。
+
+### インストールと実行
+
+Rust 1.85以上と[Ollama](https://ollama.com/)が必要です。
+
+```bash
+ollama serve
+cargo run
+```
+
+ブラウザーで`http://127.0.0.1:3210`を開きます。
+
+### コマンドラインの使い方
+
+```bash
+# この端末に合うモデルを推薦
+cargo run -- recommend
+
+# 推薦モデルを自動インストール
+cargo run -- auto-install
+```
+
+- [とてもやさしいユーザーガイド](docs/user-guide.html#lang=jp)
+- [詳細ドキュメント](docs/index.html#lang=jp)
+
+</details>
+
+<details>
+<summary><strong>Esperanto</strong></summary>
+
+### Enkonduko
+
+MJ Local LLM Hub estas Rust-ilo kiu kontrolas vian komputilon, rekomendas taŭgan malfermitpezan LLM-on, instalas ĝin kaj ebligas babili. La nuna MVP uzas Ollama kaj subtenas Qwen, Gemma, DeepSeek, Phi, Mistral kaj OpenAI gpt-oss.
+
+### Instali kaj lanĉi
+
+Vi bezonas Rust 1.85 aŭ pli novan kaj [Ollama](https://ollama.com/).
+
+```bash
+ollama serve
+cargo run
+```
+
+Malfermu `http://127.0.0.1:3210` en via retumilo.
+
+### Komandlinia uzo
+
+```bash
+# Rekomendi modelojn por ĉi tiu sistemo
+cargo run -- recommend
+
+# Instali la rekomenditan modelon
+cargo run -- auto-install
+```
+
+- [Tre facila uzantgvidilo](docs/user-guide.html#lang=es)
+- [Detala dokumentaro](docs/index.html#lang=es)
+
+</details>

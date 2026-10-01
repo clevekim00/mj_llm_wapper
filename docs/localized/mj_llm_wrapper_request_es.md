@@ -18,6 +18,6 @@ La defaŭltoj estas loka-unua funkciado, sekura memorrezervo, validigitaj artefa
 
 ---
 
-[Legi per langetoj](../reader/mj_llm_wrapper_request.html#lang=es)
+[Legi en la paĝo](../reader/mj_llm_wrapper_request.html#lang=es)
 
 Aliaj lingvoj: [한국어](../reader/mj_llm_wrapper_request.html#lang=ko) · [English](../reader/mj_llm_wrapper_request.html#lang=en) · [日本語](../reader/mj_llm_wrapper_request.html#lang=jp) · [Esperanto](../reader/mj_llm_wrapper_request.html#lang=es)

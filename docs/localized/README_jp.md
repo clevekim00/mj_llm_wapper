@@ -18,6 +18,6 @@
 
 ---
 
-[タブで読む](../reader/README.html#lang=jp)
+[ページで読む](../../README.md)
 
-他の言語: [한국어](../reader/README.html#lang=ko) · [English](../reader/README.html#lang=en) · [日本語](../reader/README.html#lang=jp) · [Esperanto](../reader/README.html#lang=es)
+他の言語: [한국어](../../README.md) · [English](../../README.md) · [日本語](../../README.md) · [Esperanto](../../README.md)

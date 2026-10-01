@@ -18,6 +18,6 @@
 
 ---
 
-[탭으로 읽기](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=ko)
+[페이지에서 읽기](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=ko)
 
 다른 언어: [한국어](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=ko) · [English](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=en) · [日本語](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=jp) · [Esperanto](../reader/video-analysis-gemma4-12b-mac-mini.html#lang=es)

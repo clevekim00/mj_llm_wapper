@@ -18,6 +18,6 @@ Rust 제어 계층, 런타임 어댑터, 모델 카탈로그, 메모리 입장 �
 
 ---
 
-[탭으로 읽기](../reader/blueprint-local-llm-hub.html#lang=ko)
+[페이지에서 읽기](../reader/blueprint-local-llm-hub.html#lang=ko)
 
 다른 언어: [한국어](../reader/blueprint-local-llm-hub.html#lang=ko) · [English](../reader/blueprint-local-llm-hub.html#lang=en) · [日本語](../reader/blueprint-local-llm-hub.html#lang=jp) · [Esperanto](../reader/blueprint-local-llm-hub.html#lang=es)

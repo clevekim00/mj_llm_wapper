@@ -18,6 +18,6 @@ mj-narmer가 로컬 LLM 게이트웨이에 요구하는 OpenAI 호환, 구조화
 
 ---
 
-[탭으로 읽기](../reader/mj_llm_wrapper_request.html#lang=ko)
+[페이지에서 읽기](../reader/mj_llm_wrapper_request.html#lang=ko)
 
 다른 언어: [한국어](../reader/mj_llm_wrapper_request.html#lang=ko) · [English](../reader/mj_llm_wrapper_request.html#lang=en) · [日本語](../reader/mj_llm_wrapper_request.html#lang=jp) · [Esperanto](../reader/mj_llm_wrapper_request.html#lang=es)

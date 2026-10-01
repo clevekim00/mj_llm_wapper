@@ -18,6 +18,6 @@ mj-narmerがローカルLLMゲートウェイに求めるOpenAI互換、構造�
 
 ---
 
-[タブで読む](../reader/mj_llm_wrapper_request.html#lang=jp)
+[ページで読む](../reader/mj_llm_wrapper_request.html#lang=jp)
 
 他の言語: [한국어](../reader/mj_llm_wrapper_request.html#lang=ko) · [English](../reader/mj_llm_wrapper_request.html#lang=en) · [日本語](../reader/mj_llm_wrapper_request.html#lang=jp) · [Esperanto](../reader/mj_llm_wrapper_request.html#lang=es)

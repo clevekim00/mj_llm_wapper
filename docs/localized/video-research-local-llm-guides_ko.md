@@ -18,6 +18,6 @@
 
 ---
 
-[탭으로 읽기](../reader/video-research-local-llm-guides.html#lang=ko)
+[페이지에서 읽기](../reader/video-research-local-llm-guides.html#lang=ko)
 
 다른 언어: [한국어](../reader/video-research-local-llm-guides.html#lang=ko) · [English](../reader/video-research-local-llm-guides.html#lang=en) · [日本語](../reader/video-research-local-llm-guides.html#lang=jp) · [Esperanto](../reader/video-research-local-llm-guides.html#lang=es)
