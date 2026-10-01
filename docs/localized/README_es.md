@@ -18,6 +18,6 @@ La defaŭltoj estas loka-unua funkciado, sekura memorrezervo, validigitaj artefa
 
 ---
 
-[Legi en la paĝo](../../README.md)
+[Legi en la paĝo](../readme.html#lang=es)
 
-Aliaj lingvoj: [한국어](../../README.md) · [English](../../README.md) · [日本語](../../README.md) · [Esperanto](../../README.md)
+Aliaj lingvoj: [한국어](../readme.html#lang=ko) · [English](../readme.html#lang=en) · [日本語](../readme.html#lang=jp) · [Esperanto](../readme.html#lang=es)

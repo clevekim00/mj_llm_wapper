@@ -18,6 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-[Read on the page](../../README.md)
+[Read on the page](../readme.html#lang=en)
 
-Other languages: [한국어](../../README.md) · [English](../../README.md) · [日本語](../../README.md) · [Esperanto](../../README.md)
+Other languages: [한국어](../readme.html#lang=ko) · [English](../readme.html#lang=en) · [日本語](../readme.html#lang=jp) · [Esperanto](../readme.html#lang=es)

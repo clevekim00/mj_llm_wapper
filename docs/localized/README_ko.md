@@ -18,6 +18,6 @@
 
 ---
 
-[페이지에서 읽기](../../README.md)
+[페이지에서 읽기](../readme.html#lang=ko)
 
-다른 언어: [한국어](../../README.md) · [English](../../README.md) · [日本語](../../README.md) · [Esperanto](../../README.md)
+다른 언어: [한국어](../readme.html#lang=ko) · [English](../readme.html#lang=en) · [日本語](../readme.html#lang=jp) · [Esperanto](../readme.html#lang=es)
