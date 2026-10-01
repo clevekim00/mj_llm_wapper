@@ -18,4 +18,6 @@
 
 ---
 
-他の言語: [한국어](video-research-local-llm-guides_ko.md) · [English](video-research-local-llm-guides_en.md) · [日本語](video-research-local-llm-guides_jp.md) · [Esperanto](video-research-local-llm-guides_es.md)
+[タブで読む](../reader/video-research-local-llm-guides.html#lang=jp)
+
+他の言語: [한국어](../reader/video-research-local-llm-guides.html#lang=ko) · [English](../reader/video-research-local-llm-guides.html#lang=en) · [日本語](../reader/video-research-local-llm-guides.html#lang=jp) · [Esperanto](../reader/video-research-local-llm-guides.html#lang=es)

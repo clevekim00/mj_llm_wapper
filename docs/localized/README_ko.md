@@ -18,4 +18,6 @@
 
 ---
 
-다른 언어: [한국어](README_ko.md) · [English](README_en.md) · [日本語](README_jp.md) · [Esperanto](README_es.md)
+[탭으로 읽기](../reader/README.html#lang=ko)
+
+다른 언어: [한국어](../reader/README.html#lang=ko) · [English](../reader/README.html#lang=en) · [日本語](../reader/README.html#lang=jp) · [Esperanto](../reader/README.html#lang=es)

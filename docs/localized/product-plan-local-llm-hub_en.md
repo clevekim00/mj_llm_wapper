@@ -18,4 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-Other languages: [한국어](product-plan-local-llm-hub_ko.md) · [English](product-plan-local-llm-hub_en.md) · [日本語](product-plan-local-llm-hub_jp.md) · [Esperanto](product-plan-local-llm-hub_es.md)
+[Read with tabs](../reader/product-plan-local-llm-hub.html#lang=en)
+
+Other languages: [한국어](../reader/product-plan-local-llm-hub.html#lang=ko) · [English](../reader/product-plan-local-llm-hub.html#lang=en) · [日本語](../reader/product-plan-local-llm-hub.html#lang=jp) · [Esperanto](../reader/product-plan-local-llm-hub.html#lang=es)

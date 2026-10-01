@@ -1,16 +1,28 @@
-# MJ Local LLM Hub MVP
+<div align="center">
+  <img src="docs/assets/mj-local-llm-hub-logo.png" width="132" alt="MJ Local LLM Hub logo">
+  <h1>MJ Local LLM Hub</h1>
+  <h3>내 장치에 맞는 오픈 웨이트 LLM을 찾고, 설치하고, 바로 대화하세요.</h3>
+  <p>Local-first model installer, chat, RAG &amp; MCP hub for PC, server and mobile.</p>
+  <p>
+    <a href="docs/reader/README.html#lang=ko"><kbd>한국어</kbd></a>&nbsp;
+    <a href="docs/reader/README.html#lang=en"><kbd>English</kbd></a>&nbsp;
+    <a href="docs/reader/README.html#lang=jp"><kbd>日本語</kbd></a>&nbsp;
+    <a href="docs/reader/README.html#lang=es"><kbd>Esperanto</kbd></a>
+  </p>
+  <p>
+    <a href="docs/index.html"><strong>다국어 문서 허브</strong></a>
+    &nbsp;·&nbsp;
+    <a href="docs/user-guide.html"><strong>ELI5 쉬운 사용자 가이드</strong></a>
+  </p>
+</div>
 
-> 🌐 [다국어 문서 허브 / Multilingual docs / 多言語文書 / Plurlingvaj dokumentoj](docs/index.html) · [ELI5 사용자 가이드](docs/user-guide.html)
+---
 
-## 다국어 문서
+## 언어 선택
 
-사용자 대상 문서는 `docs/localized/`에 한국어(`_ko`), 영어(`_en`), 일본어(`_jp`), 에스페란토어(`_es`) 판으로 제공한다. 여기서 `_es`는 이 프로젝트의 요청 규칙에 따라 스페인어가 아니라 **에스페란토어**를 뜻한다. [문서 허브](docs/index.html)와 [ELI5 사용자 가이드](docs/user-guide.html)는 페이지 안의 탭으로 언어를 바꾸며, 마지막 선택을 브라우저에 기억한다.
+위 언어 버튼은 README 전용 탭 페이지를 선택한 언어로 연다. 다른 사용자 문서도 [다국어 문서 허브](docs/index.html)에서 열면 페이지를 벗어나지 않고 한국어, 영어, 일본어, 에스페란토어 탭으로 바꿔 읽을 수 있다. `_es`는 이 프로젝트의 파일명 규칙에서 **에스페란토어**를 뜻한다.
 
-원본 기술 문서는 상세한 기준 문서이고, 언어판은 핵심 결정·제약·명령·참조 링크를 보존한 읽기 쉬운 판이다. 언어판과 HTML 페이지는 다음 명령으로 다시 생성한다.
-
-```bash
-python3 scripts/generate_localized_docs.py
-```
+원본 기술 문서는 상세 기준 문서이며 `docs/localized/`의 `_ko`, `_en`, `_jp`, `_es` 파일은 읽기 쉬운 언어별 판이다. 전체 언어판과 탭 페이지는 `python3 scripts/generate_localized_docs.py`로 다시 생성한다.
 
 장치에 맞는 로컬 모델을 추천하고 설치한 뒤 같은 화면에서 스트리밍 대화를 나누는 Rust 기반 MVP다. API는 특정 엔진과 분리된 `ModelRuntime` 어댑터를 사용한다. 현재 활성 어댑터는 로컬 [Ollama](https://ollama.com/)이며 서버는 loopback 주소만 허용한다.
 

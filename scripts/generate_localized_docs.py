@@ -12,6 +12,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs" / "localized"
 OUT.mkdir(parents=True, exist_ok=True)
+READER = ROOT / "docs" / "reader"
+READER.mkdir(parents=True, exist_ok=True)
 
 LANGS = {
     "ko": {"label": "한국어", "html": "ko", "edition": "한국어 독자판", "source": "상세 원문"},
@@ -191,8 +193,10 @@ def markdown(doc, code):
         "",
         "---",
         "",
+        "[" + {"ko": "탭으로 읽기", "en": "Read with tabs", "jp": "タブで読む", "es": "Legi per langetoj"}[code] + f"](../reader/{doc['slug']}.html#lang={code})",
+        "",
         {"ko": "다른 언어", "en": "Other languages", "jp": "他の言語", "es": "Aliaj lingvoj"}[code] + ": " + " · ".join(
-            f"[{LANGS[other]['label']}]({doc['slug']}_{other}.md)" for other in LANGS
+            f"[{LANGS[other]['label']}](../reader/{doc['slug']}.html#lang={other})" for other in LANGS
         ),
         "",
     ]
@@ -210,7 +214,7 @@ def language_panel(code):
         cards.append(
             f'''<article class="doc-card"><span>📘</span><div><h3>{escape(doc["title"][code])}</h3>
             <p>{escape(doc["summary"][code])}</p>
-            <a href="localized/{doc['slug']}_{code}.md">{escape({"ko":"문서 열기","en":"Open document","jp":"文書を開く","es":"Malfermi dokumenton"}[code])} →</a></div></article>'''
+            <a href="reader/{doc['slug']}.html#lang={code}">{escape({"ko":"문서 열기","en":"Open document","jp":"文書を開く","es":"Malfermi dokumenton"}[code])} →</a></div></article>'''
         )
     return "\n".join(cards)
 
@@ -225,17 +229,42 @@ panels = "".join(
 )
 
 STYLE = """
-:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Noto Sans",sans-serif;color:#17312e;background:#f3f7f5;line-height:1.55}*{box-sizing:border-box}body{margin:0}main{width:min(1040px,calc(100% - 28px));margin:28px auto 70px}.hero,.content{background:#fff;border:1px solid #dbe7e2;border-radius:28px;padding:clamp(24px,5vw,50px);box-shadow:0 14px 40px #17312e12}.hero{text-align:center;background:linear-gradient(135deg,#dff8ef,#fff 55%,#fff0bd)}h1{font-size:clamp(2rem,7vw,4.4rem);line-height:1.05;margin:10px}.hero-icon{font-size:clamp(4rem,14vw,8rem)}.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:24px 0}.lang-tab{border:1px solid #b9cec7;border-radius:999px;background:white;padding:11px 18px;font-weight:800;cursor:pointer}.lang-tab[aria-selected=true]{background:#106d61;color:white;border-color:#106d61}.docs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.doc-card{display:flex;gap:16px;border:1px solid #dbe7e2;border-radius:20px;padding:20px;background:white}.doc-card>span{font-size:2rem}.doc-card h3{margin:0}.doc-card p{color:#5d716d}.doc-card a{color:#08665b;font-weight:800}.guide{margin-top:18px;text-align:center}.guide a{display:inline-block;background:#17312e;color:white;padding:13px 20px;border-radius:13px;text-decoration:none;font-weight:800}@media(max-width:700px){.docs{grid-template-columns:1fr}.doc-card{padding:16px}}
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Noto Sans",sans-serif;color:#eaf2fb;background:#0b1117;line-height:1.6}*{box-sizing:border-box}body{margin:0}main{width:min(1080px,calc(100% - 28px));margin:30px auto 70px}.hero{padding:clamp(34px,7vw,72px);text-align:center;border-bottom:1px solid #2b3540}.hero img{width:112px;height:112px;border-radius:24px}.hero h1{font-size:clamp(2.3rem,7vw,4.4rem);line-height:1.05;margin:18px 0 12px}.hero p{font-size:clamp(1rem,2.5vw,1.35rem);color:#aab8c7}.tabs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:26px 0}.lang-tab{border:1px solid #34414e;border-radius:9px;background:#151d26;color:#dbe8f5;padding:11px 18px;font-weight:800;cursor:pointer}.lang-tab:hover,.lang-tab:focus-visible{border-color:#16c7d8;outline:none}.lang-tab[aria-selected=true]{background:#0b8394;color:white;border-color:#22d3e5}.content{background:#101820;border:1px solid #293541;border-radius:18px;padding:clamp(20px,4vw,42px)}.docs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.doc-card{display:flex;gap:16px;border:1px solid #2c3945;border-radius:14px;padding:22px;background:#0d141b}.doc-card>span{font-size:1.1rem;color:#1cd6e4}.doc-card h3{margin:0;color:#f2f7fc}.doc-card p{color:#aab8c7}.doc-card a,.source-link{color:#36d8e6;font-weight:800}.guide{margin-top:22px;text-align:center}.guide a{display:inline-block;background:#eaf2fb;color:#0b1117;padding:13px 20px;border-radius:9px;text-decoration:none;font-weight:850}.reader{max-width:820px;margin:auto}.reader h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.12}.reader .lead{font-size:1.2rem;color:#c3d0dc}.reader li{margin:.7rem 0}.reader code{background:#061018;border:1px solid #2a3b47;padding:.15rem .4rem;border-radius:5px}.reader-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:30px}.reader-nav a{color:#36d8e6}.step-number{font-size:3rem;font-weight:900;color:#24d4e4}@media(max-width:700px){.docs{grid-template-columns:1fr}.doc-card{padding:16px}.hero img{width:88px;height:88px}}
 """
 SCRIPT = """
 const tabs=[...document.querySelectorAll('.lang-tab')];
 const panels=[...document.querySelectorAll('.lang-panel')];
-function choose(code){tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.lang===code)));panels.forEach(p=>p.hidden=p.dataset.panel!==code);localStorage.setItem('mj-doc-language',code);}
-tabs.forEach(t=>t.addEventListener('click',()=>choose(t.dataset.lang)));
-choose(localStorage.getItem('mj-doc-language')||((navigator.language||'ko').startsWith('ja')?'jp':(navigator.language||'ko').startsWith('en')?'en':(navigator.language||'ko').startsWith('eo')?'es':'ko'));
+const valid=new Set(tabs.map(t=>t.dataset.lang));
+function choose(code,writeHash=false){if(!valid.has(code))code='ko';tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.lang===code)));panels.forEach(p=>p.hidden=p.dataset.panel!==code);localStorage.setItem('mj-doc-language',code);document.documentElement.lang=({ko:'ko',en:'en',jp:'ja',es:'eo'})[code];if(writeHash)history.replaceState(null,'','#lang='+code);}
+tabs.forEach(t=>t.addEventListener('click',()=>choose(t.dataset.lang,true)));
+const direct=new URLSearchParams(location.hash.slice(1)).get('lang');
+choose(direct||localStorage.getItem('mj-doc-language')||((navigator.language||'ko').startsWith('ja')?'jp':(navigator.language||'ko').startsWith('en')?'en':(navigator.language||'ko').startsWith('eo')?'es':'ko'));
 """
 
-(ROOT / "docs" / "index.html").write_text(f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MJ Local LLM Hub Docs</title><style>{STYLE}</style></head><body><main><header class="hero"><div class="hero-icon">🧠📚</div><h1>MJ Local LLM Hub</h1><p>한국어 · English · 日本語 · Esperanto</p></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{panels}<div class="guide"><a href="user-guide.html">🎈 ELI5 User Guide</a></div></div></main><script>{SCRIPT}</script></body></html>''', encoding="utf-8")
+(ROOT / "docs" / "index.html").write_text(f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MJ Local LLM Hub Docs</title><style>{STYLE}</style></head><body><main><header class="hero"><img src="assets/mj-local-llm-hub-logo.png" alt="MJ Local LLM Hub"><h1>MJ Local LLM Hub</h1><p>Local-first model installer, chat, RAG &amp; MCP hub</p></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{panels}<div class="guide"><a href="user-guide.html">ELI5 User Guide</a></div></div></main><script>{SCRIPT}</script></body></html>''', encoding="utf-8")
+
+
+def inline_code(value):
+    parts = value.split("`")
+    return "".join(f"<code>{escape(part)}</code>" if i % 2 else escape(part) for i, part in enumerate(parts))
+
+
+def reader_panel(doc, code, first):
+    source_labels = {"ko": "상세 원문", "en": "Canonical source", "jp": "詳細な原文", "es": "Detala fonto"}
+    raw_labels = {"ko": "Markdown 판", "en": "Markdown edition", "jp": "Markdown版", "es": "Markdown-eldono"}
+    points = "".join(f"<li>{inline_code(point)}</li>" for point in doc["points"][code])
+    return f'''<section class="lang-panel reader" data-panel="{code}" lang="{LANGS[code]['html']}" {'' if first else 'hidden'}>
+      <h1>{escape(doc['title'][code])}</h1><p class="lead">{escape(doc['summary'][code])}</p><ul>{points}</ul>
+      <div class="reader-nav"><a href="../../{doc['source']}">{escape(source_labels[code])}</a><a href="../localized/{doc['slug']}_{code}.md">{escape(raw_labels[code])}</a><a href="../index.html#lang={code}">Documentation</a></div>
+    </section>'''
+
+
+for doc in DOCS:
+    reader_panels = "".join(reader_panel(doc, code, i == 0) for i, code in enumerate(LANGS))
+    (READER / f"{doc['slug']}.html").write_text(
+        f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{escape(doc['title']['en'])} · MJ Local LLM Hub</title><style>{STYLE}</style></head><body><main><header class="hero"><img src="../assets/mj-local-llm-hub-logo.png" alt="MJ Local LLM Hub"><p>MJ Local LLM Hub Documentation</p></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{reader_panels}</div></main><script>{SCRIPT}</script></body></html>''',
+        encoding="utf-8",
+    )
 
 GUIDE = {
     "ko": ("내 컴퓨터에 AI 친구 놓기", "1. 컴퓨터를 살펴봐요", "2. 맞는 모델을 골라요", "3. 내려받고 이야기해요", "작은 모델부터 시작하면 안전해요."),
@@ -244,10 +273,10 @@ GUIDE = {
     "es": ("Metu AI-amikon en vian komputilon", "1. Kontrolu la komputilon", "2. Elektu modelon kiu taŭgas", "3. Elŝutu kaj babilu", "Komencu per malgranda modelo. Tio estas pli sekura."),
 }
 guide_panels = "".join(
-    f'''<section class="lang-panel" data-panel="{code}" lang="{LANGS[code]["html"]}" {"" if i==0 else "hidden"}><h1>{escape(text[0])}</h1><div class="steps"><article><b>🩺</b><h2>{escape(text[1])}</h2><code>cargo run -- recommend</code></article><article><b>📦</b><h2>{escape(text[2])}</h2><p>RAM + model + context</p></article><article><b>💬</b><h2>{escape(text[3])}</h2><code>cargo run -- auto-install</code></article></div><div class="tip">🌱 {escape(text[4])}</div></section>'''
+    f'''<section class="lang-panel" data-panel="{code}" lang="{LANGS[code]["html"]}" {"" if i==0 else "hidden"}><h1>{escape(text[0])}</h1><div class="steps"><article><b class="step-number">01</b><h2>{escape(text[1])}</h2><code>cargo run -- recommend</code></article><article><b class="step-number">02</b><h2>{escape(text[2])}</h2><p>RAM + model + context</p></article><article><b class="step-number">03</b><h2>{escape(text[3])}</h2><code>cargo run -- auto-install</code></article></div><div class="tip">{escape(text[4])}</div></section>'''
     for i,(code,text) in enumerate(GUIDE.items())
 )
-guide_style = STYLE + ".content{text-align:center}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.steps article{background:#f8fbfa;border:2px solid #dbe7e2;border-radius:24px;padding:26px}.steps b{font-size:4rem}.steps h2{font-size:1.25rem}.steps code{display:block;background:#17312e;color:#fff;padding:10px;border-radius:10px;overflow:auto}.tip{font-size:1.35rem;font-weight:850;background:#fff0bd;border-radius:18px;padding:20px;margin-top:18px}@media(max-width:700px){.steps{grid-template-columns:1fr}}"
-(ROOT / "docs" / "user-guide.html").write_text(f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MJ Local LLM Hub ELI5 Guide</title><style>{guide_style}</style></head><body><main><header class="hero"><div class="hero-icon">💻＋🧠＝✨</div></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{guide_panels}<div class="guide"><a href="index.html">← Documentation</a></div></div></main><script>{SCRIPT}</script></body></html>''', encoding="utf-8")
+guide_style = STYLE + ".content{text-align:center}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.steps article{background:#0d141b;border:1px solid #2c3945;border-radius:14px;padding:26px}.steps h2{font-size:1.25rem}.steps code{display:block;background:#061018;color:#fff;padding:10px;border-radius:7px;overflow:auto}.tip{font-size:1.25rem;font-weight:850;background:#12343a;color:#baf8ff;border-radius:12px;padding:20px;margin-top:18px}@media(max-width:700px){.steps{grid-template-columns:1fr}}"
+(ROOT / "docs" / "user-guide.html").write_text(f'''<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MJ Local LLM Hub ELI5 Guide</title><style>{guide_style}</style></head><body><main><header class="hero"><img src="assets/mj-local-llm-hub-logo.png" alt="MJ Local LLM Hub"><h1>ELI5</h1><p>Local AI, explained simply.</p></header><nav class="tabs" role="tablist" aria-label="Language">{tabs}</nav><div class="content">{guide_panels}<div class="guide"><a href="index.html">Documentation</a></div></div></main><script>{SCRIPT}</script></body></html>''', encoding="utf-8")
 
-print(f"Generated {len(DOCS) * len(LANGS)} Markdown editions plus two HTML pages")
+print(f"Generated {len(DOCS) * len(LANGS)} Markdown editions, {len(DOCS)} tabbed readers, and two HTML hubs")

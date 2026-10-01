@@ -18,4 +18,6 @@ La defaŭltoj estas loka-unua funkciado, sekura memorrezervo, validigitaj artefa
 
 ---
 
-Aliaj lingvoj: [한국어](opensource-analysis-mlx-serve_ko.md) · [English](opensource-analysis-mlx-serve_en.md) · [日本語](opensource-analysis-mlx-serve_jp.md) · [Esperanto](opensource-analysis-mlx-serve_es.md)
+[Legi per langetoj](../reader/opensource-analysis-mlx-serve.html#lang=es)
+
+Aliaj lingvoj: [한국어](../reader/opensource-analysis-mlx-serve.html#lang=ko) · [English](../reader/opensource-analysis-mlx-serve.html#lang=en) · [日本語](../reader/opensource-analysis-mlx-serve.html#lang=jp) · [Esperanto](../reader/opensource-analysis-mlx-serve.html#lang=es)

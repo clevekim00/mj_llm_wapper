@@ -1,101 +1,103 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MJ Local LLM Hub Docs</title><style>
-:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Noto Sans",sans-serif;color:#17312e;background:#f3f7f5;line-height:1.55}*{box-sizing:border-box}body{margin:0}main{width:min(1040px,calc(100% - 28px));margin:28px auto 70px}.hero,.content{background:#fff;border:1px solid #dbe7e2;border-radius:28px;padding:clamp(24px,5vw,50px);box-shadow:0 14px 40px #17312e12}.hero{text-align:center;background:linear-gradient(135deg,#dff8ef,#fff 55%,#fff0bd)}h1{font-size:clamp(2rem,7vw,4.4rem);line-height:1.05;margin:10px}.hero-icon{font-size:clamp(4rem,14vw,8rem)}.tabs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:24px 0}.lang-tab{border:1px solid #b9cec7;border-radius:999px;background:white;padding:11px 18px;font-weight:800;cursor:pointer}.lang-tab[aria-selected=true]{background:#106d61;color:white;border-color:#106d61}.docs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.doc-card{display:flex;gap:16px;border:1px solid #dbe7e2;border-radius:20px;padding:20px;background:white}.doc-card>span{font-size:2rem}.doc-card h3{margin:0}.doc-card p{color:#5d716d}.doc-card a{color:#08665b;font-weight:800}.guide{margin-top:18px;text-align:center}.guide a{display:inline-block;background:#17312e;color:white;padding:13px 20px;border-radius:13px;text-decoration:none;font-weight:800}@media(max-width:700px){.docs{grid-template-columns:1fr}.doc-card{padding:16px}}
-</style></head><body><main><header class="hero"><div class="hero-icon">🧠📚</div><h1>MJ Local LLM Hub</h1><p>한국어 · English · 日本語 · Esperanto</p></header><nav class="tabs" role="tablist" aria-label="Language"><button class="lang-tab" role="tab" aria-selected="true" data-lang="ko">한국어</button><button class="lang-tab" role="tab" aria-selected="false" data-lang="en">English</button><button class="lang-tab" role="tab" aria-selected="false" data-lang="jp">日本語</button><button class="lang-tab" role="tab" aria-selected="false" data-lang="es">Esperanto</button></nav><div class="content"><section class="lang-panel" data-panel="ko" lang="ko" ><div class="docs"><article class="doc-card"><span>📘</span><div><h3>MJ Local LLM Hub 빠른 시작</h3>
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Noto Sans",sans-serif;color:#eaf2fb;background:#0b1117;line-height:1.6}*{box-sizing:border-box}body{margin:0}main{width:min(1080px,calc(100% - 28px));margin:30px auto 70px}.hero{padding:clamp(34px,7vw,72px);text-align:center;border-bottom:1px solid #2b3540}.hero img{width:112px;height:112px;border-radius:24px}.hero h1{font-size:clamp(2.3rem,7vw,4.4rem);line-height:1.05;margin:18px 0 12px}.hero p{font-size:clamp(1rem,2.5vw,1.35rem);color:#aab8c7}.tabs{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin:26px 0}.lang-tab{border:1px solid #34414e;border-radius:9px;background:#151d26;color:#dbe8f5;padding:11px 18px;font-weight:800;cursor:pointer}.lang-tab:hover,.lang-tab:focus-visible{border-color:#16c7d8;outline:none}.lang-tab[aria-selected=true]{background:#0b8394;color:white;border-color:#22d3e5}.content{background:#101820;border:1px solid #293541;border-radius:18px;padding:clamp(20px,4vw,42px)}.docs{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.doc-card{display:flex;gap:16px;border:1px solid #2c3945;border-radius:14px;padding:22px;background:#0d141b}.doc-card>span{font-size:1.1rem;color:#1cd6e4}.doc-card h3{margin:0;color:#f2f7fc}.doc-card p{color:#aab8c7}.doc-card a,.source-link{color:#36d8e6;font-weight:800}.guide{margin-top:22px;text-align:center}.guide a{display:inline-block;background:#eaf2fb;color:#0b1117;padding:13px 20px;border-radius:9px;text-decoration:none;font-weight:850}.reader{max-width:820px;margin:auto}.reader h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.12}.reader .lead{font-size:1.2rem;color:#c3d0dc}.reader li{margin:.7rem 0}.reader code{background:#061018;border:1px solid #2a3b47;padding:.15rem .4rem;border-radius:5px}.reader-nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:30px}.reader-nav a{color:#36d8e6}.step-number{font-size:3rem;font-weight:900;color:#24d4e4}@media(max-width:700px){.docs{grid-template-columns:1fr}.doc-card{padding:16px}.hero img{width:88px;height:88px}}
+</style></head><body><main><header class="hero"><img src="assets/mj-local-llm-hub-logo.png" alt="MJ Local LLM Hub"><h1>MJ Local LLM Hub</h1><p>Local-first model installer, chat, RAG &amp; MCP hub</p></header><nav class="tabs" role="tablist" aria-label="Language"><button class="lang-tab" role="tab" aria-selected="true" data-lang="ko">한국어</button><button class="lang-tab" role="tab" aria-selected="false" data-lang="en">English</button><button class="lang-tab" role="tab" aria-selected="false" data-lang="jp">日本語</button><button class="lang-tab" role="tab" aria-selected="false" data-lang="es">Esperanto</button></nav><div class="content"><section class="lang-panel" data-panel="ko" lang="ko" ><div class="docs"><article class="doc-card"><span>📘</span><div><h3>MJ Local LLM Hub 빠른 시작</h3>
             <p>장치에 맞는 로컬 모델을 추천하고, Ollama로 설치한 뒤 웹 또는 CLI에서 대화하는 Rust MVP입니다.</p>
-            <a href="localized/README_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/README.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>제품 기획서</h3>
             <p>PC·서버·모바일에서 오픈 웨이트 모델을 쉽게 찾고 설치하며 RAG와 MCP를 연결하는 로컬 우선 제품의 범위와 로드맵입니다.</p>
-            <a href="localized/product-plan-local-llm-hub_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/product-plan-local-llm-hub.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>통합 설계서</h3>
             <p>Rust 제어 계층, 런타임 어댑터, 모델 카탈로그, 메모리 입장 제어, 대화·RAG·MCP 계약을 정의한 구현 기준 문서입니다.</p>
-            <a href="localized/blueprint-local-llm-hub_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/blueprint-local-llm-hub.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Narmer 연동 요청</h3>
             <p>mj-narmer가 로컬 LLM 게이트웨이에 요구하는 OpenAI 호환, 구조화 출력, 취소·시간제한, 보안과 provenance 계약입니다.</p>
-            <a href="localized/mj_llm_wrapper_request_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/mj_llm_wrapper_request.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>mlx-serve 분석</h3>
             <p>Mac 우선 로컬 AI 허브인 mlx-serve에서 채택할 패턴과 그대로 복제하지 않을 부분을 정리한 문서입니다.</p>
-            <a href="localized/opensource-analysis-mlx-serve_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/opensource-analysis-mlx-serve.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>로컬 LLM 영상 연구</h3>
             <p>여러 로컬 LLM 설치·운영 영상을 주제별로 분류하고 제품 기획에 반영할 근거와 한계를 정리합니다.</p>
-            <a href="localized/video-research-local-llm-guides_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/video-research-local-llm-guides.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Gemma 4 12B 영상 분석</h3>
             <p>16GB M4 Mac mini에서 Gemma 4 12B를 LM Studio로 실행한 영상의 메모리·속도·멀티모달·API 실험을 검증합니다.</p>
-            <a href="localized/video-analysis-gemma4-12b-mac-mini_ko.md">문서 열기 →</a></div></article>
+            <a href="reader/video-analysis-gemma4-12b-mac-mini.html#lang=ko">문서 열기 →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>AI 지식창고 ELI5</h3>
             <p>문서 전체 입력, 벡터 검색, SQL, 그래프 DB를 서랍·계산기·지도 비유로 설명합니다.</p>
-            <a href="localized/video-analysis-ai-knowledge-base-eli5_ko.md">문서 열기 →</a></div></article></div></section><section class="lang-panel" data-panel="en" lang="en" hidden><div class="docs"><article class="doc-card"><span>📘</span><div><h3>MJ Local LLM Hub Quick Start</h3>
+            <a href="reader/video-analysis-ai-knowledge-base-eli5.html#lang=ko">문서 열기 →</a></div></article></div></section><section class="lang-panel" data-panel="en" lang="en" hidden><div class="docs"><article class="doc-card"><span>📘</span><div><h3>MJ Local LLM Hub Quick Start</h3>
             <p>A Rust MVP that recommends a local model for the device, installs it through Ollama, and chats through the web UI or CLI.</p>
-            <a href="localized/README_en.md">Open document →</a></div></article>
+            <a href="reader/README.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Product Plan</h3>
             <p>Scope and roadmap for a local-first product that discovers and installs open-weight models on PCs, servers, and mobile devices, with RAG and MCP integration.</p>
-            <a href="localized/product-plan-local-llm-hub_en.md">Open document →</a></div></article>
+            <a href="reader/product-plan-local-llm-hub.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Integrated Architecture</h3>
             <p>Implementation blueprint for the Rust control plane, runtime adapters, model catalog, memory admission, and chat/RAG/MCP contracts.</p>
-            <a href="localized/blueprint-local-llm-hub_en.md">Open document →</a></div></article>
+            <a href="reader/blueprint-local-llm-hub.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Narmer Integration Request</h3>
             <p>The OpenAI compatibility, structured output, cancellation, timeout, security, and provenance contract required by mj-narmer.</p>
-            <a href="localized/mj_llm_wrapper_request_en.md">Open document →</a></div></article>
+            <a href="reader/mj_llm_wrapper_request.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>mlx-serve Analysis</h3>
             <p>An assessment of patterns worth adopting from mlx-serve, a Mac-first local AI hub, and parts that should not be copied directly.</p>
-            <a href="localized/opensource-analysis-mlx-serve_en.md">Open document →</a></div></article>
+            <a href="reader/opensource-analysis-mlx-serve.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Local LLM Video Research</h3>
             <p>A categorized review of local LLM setup and operations videos, with product implications and evidence limitations.</p>
-            <a href="localized/video-research-local-llm-guides_en.md">Open document →</a></div></article>
+            <a href="reader/video-research-local-llm-guides.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Gemma 4 12B Video Analysis</h3>
             <p>A review of memory, speed, multimodal, and API experiments from a video running Gemma 4 12B in LM Studio on a 16GB M4 Mac mini.</p>
-            <a href="localized/video-analysis-gemma4-12b-mac-mini_en.md">Open document →</a></div></article>
+            <a href="reader/video-analysis-gemma4-12b-mac-mini.html#lang=en">Open document →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>AI Knowledge Store ELI5</h3>
             <p>Explains full-document input, vector search, SQL, and graph databases with basket, calculator, and map metaphors.</p>
-            <a href="localized/video-analysis-ai-knowledge-base-eli5_en.md">Open document →</a></div></article></div></section><section class="lang-panel" data-panel="jp" lang="ja" hidden><div class="docs"><article class="doc-card"><span>📘</span><div><h3>MJ Local LLM Hub クイックスタート</h3>
+            <a href="reader/video-analysis-ai-knowledge-base-eli5.html#lang=en">Open document →</a></div></article></div></section><section class="lang-panel" data-panel="jp" lang="ja" hidden><div class="docs"><article class="doc-card"><span>📘</span><div><h3>MJ Local LLM Hub クイックスタート</h3>
             <p>端末に合うローカルモデルを推薦し、Ollamaで導入してWebまたはCLIから会話するRust製MVPです。</p>
-            <a href="localized/README_jp.md">文書を開く →</a></div></article>
+            <a href="reader/README.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>製品企画書</h3>
             <p>PC・サーバー・モバイルでオープンウェイトモデルを探して導入し、RAGとMCPを接続するローカル優先製品の範囲とロードマップです。</p>
-            <a href="localized/product-plan-local-llm-hub_jp.md">文書を開く →</a></div></article>
+            <a href="reader/product-plan-local-llm-hub.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>統合設計書</h3>
             <p>Rust制御層、ランタイムアダプター、モデルカタログ、メモリ受け入れ、会話・RAG・MCP契約を定義する実装基準です。</p>
-            <a href="localized/blueprint-local-llm-hub_jp.md">文書を開く →</a></div></article>
+            <a href="reader/blueprint-local-llm-hub.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Narmer連携要件</h3>
             <p>mj-narmerがローカルLLMゲートウェイに求めるOpenAI互換、構造化出力、キャンセル、タイムアウト、セキュリティ、来歴の契約です。</p>
-            <a href="localized/mj_llm_wrapper_request_jp.md">文書を開く →</a></div></article>
+            <a href="reader/mj_llm_wrapper_request.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>mlx-serve分析</h3>
             <p>Mac優先のローカルAIハブmlx-serveから採用すべきパターンと、そのままコピーしない部分の分析です。</p>
-            <a href="localized/opensource-analysis-mlx-serve_jp.md">文書を開く →</a></div></article>
+            <a href="reader/opensource-analysis-mlx-serve.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>ローカルLLM動画調査</h3>
             <p>複数のローカルLLM導入・運用動画を分類し、製品への示唆と根拠の限界を整理します。</p>
-            <a href="localized/video-research-local-llm-guides_jp.md">文書を開く →</a></div></article>
+            <a href="reader/video-research-local-llm-guides.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Gemma 4 12B動画分析</h3>
             <p>16GB M4 Mac miniでGemma 4 12BをLM Studio実行した動画のメモリ、速度、マルチモーダル、API実験を検証します。</p>
-            <a href="localized/video-analysis-gemma4-12b-mac-mini_jp.md">文書を開く →</a></div></article>
+            <a href="reader/video-analysis-gemma4-12b-mac-mini.html#lang=jp">文書を開く →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>AI知識倉庫 ELI5</h3>
             <p>全文入力、ベクトル検索、SQL、グラフDBをかご・計算機・地図の比喩で説明します。</p>
-            <a href="localized/video-analysis-ai-knowledge-base-eli5_jp.md">文書を開く →</a></div></article></div></section><section class="lang-panel" data-panel="es" lang="eo" hidden><div class="docs"><article class="doc-card"><span>📘</span><div><h3>Rapida Komenco de MJ Local LLM Hub</h3>
+            <a href="reader/video-analysis-ai-knowledge-base-eli5.html#lang=jp">文書を開く →</a></div></article></div></section><section class="lang-panel" data-panel="es" lang="eo" hidden><div class="docs"><article class="doc-card"><span>📘</span><div><h3>Rapida Komenco de MJ Local LLM Hub</h3>
             <p>Rust-a MVP kiu rekomendas lokan modelon por la aparato, instalas ĝin per Ollama, kaj babilas per la reto aŭ komandlinio.</p>
-            <a href="localized/README_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/README.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Produkta Plano</h3>
             <p>Amplekso kaj vojmapo por loka-unua produkto, kiu trovas kaj instalas malfermitpezajn modelojn en komputiloj, serviloj kaj poŝaparatoj, kun RAG kaj MCP.</p>
-            <a href="localized/product-plan-local-llm-hub_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/product-plan-local-llm-hub.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Integrita Arkitekturo</h3>
             <p>Realiga skizo por la Rust-regtavolo, rultempaj adaptiloj, modela katalogo, memor-akcepto kaj kontraktoj por babilo/RAG/MCP.</p>
-            <a href="localized/blueprint-local-llm-hub_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/blueprint-local-llm-hub.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Peto pri Integrado kun Narmer</h3>
             <p>La kontrakto pri OpenAI-kongruo, strukturita eligo, nuligo, tempolimo, sekureco kaj deveno postulata de mj-narmer.</p>
-            <a href="localized/mj_llm_wrapper_request_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/mj_llm_wrapper_request.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Analizo de mlx-serve</h3>
             <p>Takso de utilaj ŝablonoj el mlx-serve, Mac-unua loka AI-centro, kaj de partoj ne rekte kopiendaj.</p>
-            <a href="localized/opensource-analysis-mlx-serve_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/opensource-analysis-mlx-serve.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Video-Esploro pri Lokaj LLM-oj</h3>
             <p>Kategoria revizio de filmetoj pri instalado kaj funkciado de lokaj LLM-oj, kun produktaj sekvoj kaj limoj de la pruvoj.</p>
-            <a href="localized/video-research-local-llm-guides_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/video-research-local-llm-guides.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>Video-Analizo de Gemma 4 12B</h3>
             <p>Revizio de memor-, rapid-, plurmodala kaj API-eksperimentoj en filmeto pri Gemma 4 12B per LM Studio sur 16GB M4 Mac mini.</p>
-            <a href="localized/video-analysis-gemma4-12b-mac-mini_es.md">Malfermi dokumenton →</a></div></article>
+            <a href="reader/video-analysis-gemma4-12b-mac-mini.html#lang=es">Malfermi dokumenton →</a></div></article>
 <article class="doc-card"><span>📘</span><div><h3>AI-Scivendejo ELI5</h3>
             <p>Klarigas tutdokumentan enigon, vektoran serĉon, SQL kaj grafajn datumbazojn per korbo, kalkulilo kaj mapo.</p>
-            <a href="localized/video-analysis-ai-knowledge-base-eli5_es.md">Malfermi dokumenton →</a></div></article></div></section><div class="guide"><a href="user-guide.html">🎈 ELI5 User Guide</a></div></div></main><script>
+            <a href="reader/video-analysis-ai-knowledge-base-eli5.html#lang=es">Malfermi dokumenton →</a></div></article></div></section><div class="guide"><a href="user-guide.html">ELI5 User Guide</a></div></div></main><script>
 const tabs=[...document.querySelectorAll('.lang-tab')];
 const panels=[...document.querySelectorAll('.lang-panel')];
-function choose(code){tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.lang===code)));panels.forEach(p=>p.hidden=p.dataset.panel!==code);localStorage.setItem('mj-doc-language',code);}
-tabs.forEach(t=>t.addEventListener('click',()=>choose(t.dataset.lang)));
-choose(localStorage.getItem('mj-doc-language')||((navigator.language||'ko').startsWith('ja')?'jp':(navigator.language||'ko').startsWith('en')?'en':(navigator.language||'ko').startsWith('eo')?'es':'ko'));
+const valid=new Set(tabs.map(t=>t.dataset.lang));
+function choose(code,writeHash=false){if(!valid.has(code))code='ko';tabs.forEach(t=>t.setAttribute('aria-selected',String(t.dataset.lang===code)));panels.forEach(p=>p.hidden=p.dataset.panel!==code);localStorage.setItem('mj-doc-language',code);document.documentElement.lang=({ko:'ko',en:'en',jp:'ja',es:'eo'})[code];if(writeHash)history.replaceState(null,'','#lang='+code);}
+tabs.forEach(t=>t.addEventListener('click',()=>choose(t.dataset.lang,true)));
+const direct=new URLSearchParams(location.hash.slice(1)).get('lang');
+choose(direct||localStorage.getItem('mj-doc-language')||((navigator.language||'ko').startsWith('ja')?'jp':(navigator.language||'ko').startsWith('en')?'en':(navigator.language||'ko').startsWith('eo')?'es':'ko'));
 </script></body></html>

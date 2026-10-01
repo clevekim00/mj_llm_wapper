@@ -18,4 +18,6 @@ Defaults are local-first execution, safe memory headroom, verified artifacts, ru
 
 ---
 
-Other languages: [한국어](blueprint-local-llm-hub_ko.md) · [English](blueprint-local-llm-hub_en.md) · [日本語](blueprint-local-llm-hub_jp.md) · [Esperanto](blueprint-local-llm-hub_es.md)
+[Read with tabs](../reader/blueprint-local-llm-hub.html#lang=en)
+
+Other languages: [한국어](../reader/blueprint-local-llm-hub.html#lang=ko) · [English](../reader/blueprint-local-llm-hub.html#lang=en) · [日本語](../reader/blueprint-local-llm-hub.html#lang=jp) · [Esperanto](../reader/blueprint-local-llm-hub.html#lang=es)
