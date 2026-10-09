@@ -2,15 +2,15 @@
 
 > Esperanta legant-eldono · [Detala fonto](../../blueprint-local-llm-hub.md)
 
-Realiga skizo por la Rust-regtavolo, rultempaj adaptiloj, modela katalogo, memor-akcepto kaj kontraktoj por babilo/RAG/MCP.
+Projekto por komuna Rust-kerno, enkonstruitaj rultempoj, plurmodalaj datumoj/indeksoj/API, rimed-reakiro kaj migrado.
 
 ## Ĉefaj punktoj
 
-- API kaj UI dependas nur de la kontrakto `ModelRuntime`, ne de specifa motoro.
-- Ollama servas la MVP-on; mistral.rs estas ĉefa kandidato por komputilo/servilo; LiteRT-LM estas la poŝtelefona vojo.
-- Akcepto uzas pintan RAM, KV-kaŝmemoron kaj OS-rezervon, ne nur dosiergrandon.
-- Apartigu OpenAI-kongruan inferencon de la denaska administra API.
-- MCP defaŭlte uzas minimumajn rajtojn, aprobon, sekret-izoladon kaj protokolojn.
+- Ĉapitro 5 difinas la celan arkitekturon, datumkontraktojn, API kaj dosieran migradon.
+- Poŝtelefonoj vokas la kernon per denaskaj pontoj; komputila HTTP estas laŭvola.
+- Validigu LiteRT-LM kiel ĉefan enkonstruitan motoron kaj forigu la produktan dependecon de Ollama.
+- Ne miksu vektorojn kun malsamaj modeloj, kvantigoj, dimensioj aŭ antaŭtraktado.
+- Eldonaj kontroloj kovras senretan uzon sur realaj aparatoj, nuligon/reakiron kaj plurmodalan serĉkvaliton.
 
 ## Komunaj principoj
 

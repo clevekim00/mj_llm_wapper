@@ -2,7 +2,7 @@
 <h1 align="center">MJ Local LLM Hub</h1>
 <p align="center"><strong>내 장치에 맞는 오픈 웨이트 LLM을 찾고, 설치하고, 바로 대화하세요.</strong></p>
 <p align="center">로컬 AI를 PC · 서버 · 모바일에서 더 쉽게.</p>
-<p align="center">Rust · Ollama adapter · 한국어 / English / 日本語 / Esperanto · MIT</p>
+<p align="center">Rust · mj-llm / LiteRT-LM · 한국어 / English / 日本語 / Esperanto · MIT</p>
 
 <p align="center"><a href="https://clevekim00.github.io/mj_llm_wapper/readme.html#lang=ko">한국어 탭으로 읽기</a> · <a href="https://clevekim00.github.io/mj_llm_wapper/readme.html#lang=en">Read in English</a> · <a href="https://clevekim00.github.io/mj_llm_wapper/readme.html#lang=jp">日本語で読む</a> · <a href="https://clevekim00.github.io/mj_llm_wapper/readme.html#lang=es">Legi Esperante</a></p>
 
@@ -20,52 +20,35 @@
 
 MJ Local LLM Hub는 현재 장치의 CPU·메모리·운영체제를 확인하고, 실행 가능한 로컬 LLM과 안전한 설정을 추천하는 Rust 기반 도구입니다. 모델 설치부터 테스트 대화까지 한 흐름으로 연결하고, 특정 엔진에 종속되지 않도록 런타임 어댑터 구조를 사용합니다.
 
-현재 MVP는 로컬 [Ollama](https://ollama.com/)를 통해 Qwen, Gemma, DeepSeek, Phi, Mistral과 OpenAI gpt-oss 모델을 설치하고 실행합니다. 모바일 네이티브 추론, RAG와 MCP는 후속 단계입니다.
+기본 실행 엔진을 [mj-llm](https://github.com/clevekim00/mj-llm)의 내장 LiteRT-LM 어댑터로 전환했습니다. Ollama/Python 서버 없이 **macOS CPU 대화와 텍스트 임베딩**을 실행합니다. 기존 Ollama 어댑터는 `MJ_HUB_RUNTIME=ollama`로 선택할 수 있습니다.
 
-### 핵심 특징
-
-- **장치 진단** — OS, architecture, CPU, RAM과 런타임 연결 상태 확인
-- **안전한 모델 추천** — 모델 크기뿐 아니라 실행 메모리와 시스템 여유를 함께 계산
-- **간단한 설치** — 추천 결과에서 모델을 선택하거나 최적 모델을 자동 설치
-- **바로 테스트하는 대화** — 설치한 모델로 멀티턴 스트리밍 대화
-- **런타임 어댑터** — Ollama를 시작으로 mistral.rs, LiteRT-LM, llama.cpp 확장 가능
-- **OpenAI 호환 API** — `/v1/models`, `/v1/chat/completions` 제공
-- **로컬 우선 보안** — loopback-only 서버, 로컬 토큰, 승인 기반 확장 설계
+현재는 짧은 대화용 미리보기입니다. 생성 입력은 합계 UTF-8 1024 bytes, context 512 tokens, 출력 최대 32 tokens이며 답변을 완성한 뒤 표시합니다. 토큰별 스트리밍·도구 호출·JSON 강제 출력·모바일 native 실행은 아직 지원하지 않습니다.
 
 ## 설치와 실행
 
-### 사전 요구사항
-
-- Rust 1.85 이상
-- 로컬 [Ollama](https://ollama.com/)
-- 모델을 저장할 디스크 공간과 다운로드 네트워크
-
-### 웹 UI 실행
+Rust 1.95에서 검증하며 macOS 빌드 도구와 고정 LiteRT SDK가 필요합니다. **[SDK 준비·모델 설치·실행 안내](docs/mj-llm-runtime.md)**를 따라 설정하세요.
 
 ```bash
-ollama serve
-cargo run
+bash scripts/run-mj-llm-macos.sh "$MJ_LITERT_SDK_DIR" recommend
+bash scripts/run-mj-llm-macos.sh "$MJ_LITERT_SDK_DIR" install mj-llm/qwen3-0.6b
+bash scripts/run-mj-llm-macos.sh "$MJ_LITERT_SDK_DIR" install google/embeddinggemma-2
+bash scripts/run-mj-llm-macos.sh "$MJ_LITERT_SDK_DIR" serve
 ```
 
-브라우저에서 `http://127.0.0.1:3210`을 엽니다.
+웹 UI는 `http://127.0.0.1:3210`에서 열립니다. CLI와 웹 모델 센터는 선택한 런타임의 모델만 표시하며 다운로드한 파일은 크기·SHA-256 검증 후 설치합니다. 기존 N0 모델 파일을 직접 지정할 수도 있습니다.
 
-### 명령줄 추천과 설치
+- `/v1/chat/completions`: `mj-llm/qwen3-0.6b`, `stream=false`, 역할을 보존한 대화 기록
+- `/v1/embeddings`: `google/embeddinggemma-2`, text 입력, 768차원, embedding-space 식별자
+- `/api/status`: 실제 선택한 엔진과 설치 상태
+- 인증된 loopback 전용 서버와 기존 대화 저장 기능 유지
+
+SDK 없는 `cargo run`은 서버와 설정 상태를 확인하는 용도로 사용할 수 있으며, 추론은 미지원 오류를 반환합니다. Ollama를 자동으로 실행하거나 fallback하지 않습니다. 기존 방식은 다음처럼 명시합니다.
 
 ```bash
-# 현재 시스템에 맞는 모델 추천
-cargo run -- recommend
-
-# JSON 형식 추천 결과
-cargo run -- recommend --json
-
-# 추천된 미설치 모델 자동 선택·설치
-cargo run -- auto-install
-
-# 특정 모델 설치
-cargo run -- install qwen3-0.6b-q4
+MJ_HUB_RUNTIME=ollama cargo run -- serve
 ```
 
-설치 전에 모델 크기, 예상 peak RAM과 적합도를 보여 주고 확인을 받습니다. 자동화 환경에서는 `--yes`를 사용할 수 있으며, 안전 기준을 벗어난 모델은 `--force` 없이는 설치하지 않습니다.
+Python 비교 embedding 서비스는 `MJ_EMBEDDING_URL`을 지정할 때만 사용합니다. [기존 reference 안내](docs/embeddinggemma-2.md).
 
 ## 사용자 문서
 

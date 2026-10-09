@@ -1,7 +1,8 @@
 use mj_local_llm_hub::{
     api::{AppState, generate_token, router},
     cli::{self, Command},
-    runtime::OllamaRuntime,
+    embeddings::EmbeddingRuntime,
+    runtime::{ModelRuntime, configured_runtime},
     store::Store,
 };
 use std::{
@@ -21,15 +22,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .init();
 
     let command = cli::parse(std::env::args().skip(1))?;
-    let runtime_url =
-        std::env::var("OLLAMA_HOST").unwrap_or_else(|_| "http://127.0.0.1:11434".into());
-    if command != Command::Serve {
-        return cli::run(command, runtime_url).await;
+    if command == Command::Help {
+        cli::print_help();
+        return Ok(());
     }
-    serve(runtime_url).await
+    let runtime = configured_runtime().await?;
+    if command != Command::Serve {
+        return cli::run(command, runtime).await;
+    }
+    serve(runtime).await
 }
 
-async fn serve(runtime_url: String) -> Result<(), Box<dyn std::error::Error>> {
+async fn serve(runtime: Arc<dyn ModelRuntime>) -> Result<(), Box<dyn std::error::Error>> {
     let port = std::env::var("MJ_HUB_PORT")
         .ok()
         .and_then(|value| value.parse().ok())
@@ -50,7 +54,11 @@ async fn serve(runtime_url: String) -> Result<(), Box<dyn std::error::Error>> {
         Err(_) => generate_token(),
     });
     let state = AppState {
-        runtime: Arc::new(OllamaRuntime::new(runtime_url)),
+        embeddings: std::env::var("MJ_EMBEDDING_URL")
+            .ok()
+            .map(|url| EmbeddingRuntime::new(&url, token.as_str()))
+            .transpose()?,
+        runtime,
         store: Arc::new(Store::open(data_dir.join("state.json")).await?),
         token: token.clone(),
     };

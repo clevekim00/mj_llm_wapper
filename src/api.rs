@@ -25,6 +25,7 @@ use uuid::Uuid;
 
 #[derive(Clone)]
 pub struct AppState {
+    pub embeddings: Option<crate::embeddings::EmbeddingRuntime>,
     pub runtime: Arc<dyn ModelRuntime>,
     pub store: Arc<Store>,
     pub token: Arc<String>,
@@ -43,6 +44,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/models/{model}/install", post(install_model))
         .route("/api/models/{model}/details", get(model_details))
         .route("/v1/chat/completions", post(openai_chat_completions))
+        .route("/v1/embeddings", post(openai_embeddings))
         .route("/api/chat", post(chat))
         .route("/api/conversations", get(conversations))
         .route("/api/conversations/{id}", delete(delete_conversation))
@@ -121,7 +123,7 @@ async fn models(
     let runtime = state.runtime.status().await;
     let installed: HashSet<_> = runtime.installed_models.iter().cloned().collect();
     let profile = device::detect(runtime.reachable);
-    let catalog = catalog::load_catalog().map_err(internal_error)?;
+    let catalog = state.runtime.catalog().map_err(internal_error)?;
     Ok(Json(
         json!({ "recommended": catalog::recommend(&catalog, &profile, &installed) }),
     ))
@@ -131,15 +133,56 @@ async fn openai_models(State(state): State<AppState>) -> Json<Value> {
     let runtime = state.runtime.status().await;
     let provider = runtime.kind.clone();
     let capabilities = runtime.capabilities.clone();
-    Json(json!({
-        "object": "list",
-        "data": runtime.installed_models.into_iter().map(|id| json!({
-            "id": id,
-            "object": "model",
-            "owned_by": "local",
-            "mj": {"provider": provider, "capabilities": capabilities}
-        })).collect::<Vec<_>>()
-    }))
+    let mut data: Vec<Value> = runtime
+        .installed_models
+        .into_iter()
+        .map(|id| {
+            json!({
+                "id": id,
+                "object": "model",
+                "owned_by": "local",
+                "mj": {"provider": provider, "capabilities": if provider == "mj-llm" && id == crate::mj_llm::EMBEDDING_MODEL {
+                    json!({"embeddings":true,"chat":false,"chat_completions":false,"modalities":["text"],"dimensions":[768],"context_tokens":512})
+                } else if provider == "mj-llm" {
+                    json!({"embeddings":false,"chat":true,"chat_completions":true,"streaming":false,"structured_output":[],"max_output_tokens":32,"max_input_bytes":1024,"context_tokens":512})
+                } else { serde_json::to_value(&capabilities).expect("capabilities") }}
+            })
+        })
+        .collect();
+    if let Some(embeddings) = &state.embeddings
+        && embeddings.ready().await
+    {
+        data.retain(|row| row["id"] != crate::embeddings::MODEL);
+        data.push(crate::embeddings::model_descriptor());
+    }
+    Json(json!({"object": "list", "data": data}))
+}
+
+async fn openai_embeddings(
+    State(state): State<AppState>,
+    Json(request): Json<Value>,
+) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
+    if request.get("model").and_then(Value::as_str) != Some(crate::embeddings::MODEL) {
+        return Err(openai_error(
+            StatusCode::BAD_REQUEST,
+            "invalid_request",
+            "model must be google/embeddinggemma-2",
+        ));
+    }
+    if let Some(runtime) = state.embeddings.as_ref() {
+        runtime
+            .embed(&request)
+            .await
+            .map(Json)
+            .map_err(runtime_openai_error)
+    } else {
+        state
+            .runtime
+            .embed(&request)
+            .await
+            .map(Json)
+            .map_err(runtime_openai_error)
+    }
 }
 
 async fn install_model(
@@ -149,7 +192,9 @@ async fn install_model(
     Sse<impl futures_util::Stream<Item = Result<Event, Infallible>>>,
     (StatusCode, Json<ApiError>),
 > {
-    let allowed = catalog::load_catalog()
+    let allowed = state
+        .runtime
+        .catalog()
         .map_err(internal_error)?
         .into_iter()
         .any(|artifact| artifact.runtime_model == model);
@@ -285,7 +330,7 @@ fn enrich_completion(
 ) {
     let resolved_model = body.get("model").cloned().unwrap_or(Value::Null);
     let model_digest = details
-        .and_then(|value| value.get("digest"))
+        .and_then(|value| value.get("digest").or_else(|| value.get("artifact_sha256")))
         .cloned()
         .unwrap_or(Value::Null);
     let inference_ms = body
@@ -293,9 +338,11 @@ fn enrich_completion(
         .and_then(Value::as_u64)
         .map(|nanoseconds| nanoseconds / 1_000_000);
     if let Some(object) = body.as_object_mut() {
-        object.insert(
-            "mj".into(),
-            json!({
+        let mut metadata = object
+            .remove("mj")
+            .and_then(|value| value.as_object().cloned())
+            .unwrap_or_default();
+        metadata.extend(json!({
                 "provider": runtime.id(),
                 "endpoint_id": runtime.endpoint_id(),
                 "requested_model": requested_model,
@@ -305,8 +352,8 @@ fn enrich_completion(
                 "latency_ms": latency_ms,
                 "queue_latency_ms": Value::Null,
                 "inference_latency_ms": inference_ms
-            }),
-        );
+            }).as_object().expect("metadata object").clone());
+        object.insert("mj".into(), Value::Object(metadata));
     }
 }
 
@@ -330,9 +377,8 @@ fn runtime_openai_error(error: RuntimeError) -> (StatusCode, Json<Value>) {
             StatusCode::from_u16(499).unwrap_or(StatusCode::BAD_REQUEST)
         }
         RuntimeErrorCode::RateLimited => StatusCode::TOO_MANY_REQUESTS,
-        RuntimeErrorCode::RuntimeUnavailable | RuntimeErrorCode::UpstreamError => {
-            StatusCode::BAD_GATEWAY
-        }
+        RuntimeErrorCode::RuntimeUnavailable => StatusCode::SERVICE_UNAVAILABLE,
+        RuntimeErrorCode::UpstreamError => StatusCode::BAD_GATEWAY,
     };
     openai_error(status, error.code.as_str(), &error.message)
 }
@@ -499,8 +545,8 @@ async fn chat(
                 Ok(RuntimeEvent::Done) => break,
                 Ok(_) => {}
                 Err(error) => {
-                    yield Ok(Event::default().event("error").data(json!({"error": error.code.as_str()}).to_string()));
-                    break;
+                    yield Ok(Event::default().event("error").data(json!({"error": error.message, "code": error.code.as_str()}).to_string()));
+                    return;
                 }
             }
         }
@@ -554,8 +600,8 @@ fn install_events_to_sse(
                 }
                 Ok(_) => {}
                 Err(error) => {
-                    yield Ok(Event::default().event("error").data(json!({"error": error.code.as_str()}).to_string()));
-                    break;
+                    yield Ok(Event::default().event("error").data(json!({"error": error.message, "code": error.code.as_str()}).to_string()));
+                    return;
                 }
             }
         }
@@ -575,7 +621,7 @@ fn runtime_error(error: RuntimeError) -> (StatusCode, Json<ApiError>) {
     (
         StatusCode::BAD_GATEWAY,
         Json(ApiError {
-            error: format!("로컬 런타임 연결 실패: {}", error.code.as_str()),
+            error: format!("{}: {}", error.code.as_str(), error.message),
         }),
     )
 }
@@ -583,6 +629,38 @@ fn runtime_error(error: RuntimeError) -> (StatusCode, Json<ApiError>) {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn disabled_embeddings_return_actionable_error() {
+        let dir = tempfile::tempdir().unwrap();
+        let state = AppState {
+            runtime: Arc::new(crate::runtime::OllamaRuntime::new(
+                "http://127.0.0.1:1".into(),
+            )),
+            embeddings: None,
+            store: Arc::new(Store::open(dir.path().join("state.json")).await.unwrap()),
+            token: Arc::new("test-token".into()),
+        };
+        let error = openai_embeddings(
+            State(state.clone()),
+            Json(json!({
+                "model": crate::embeddings::MODEL, "input": "hello"
+            })),
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(error.0, StatusCode::SERVICE_UNAVAILABLE);
+        assert_eq!(error.1.0["error"]["code"], "runtime_unavailable");
+        let error = openai_embeddings(
+            State(state),
+            Json(json!({
+                "model": "chat-model", "input": "hello"
+            })),
+        )
+        .await
+        .unwrap_err();
+        assert_eq!(error.0, StatusCode::BAD_REQUEST);
+    }
 
     #[test]
     fn validates_required_openai_fields() {

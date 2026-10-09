@@ -3,5 +3,7 @@ pub mod catalog;
 pub mod cli;
 pub mod device;
 pub mod domain;
+pub mod embeddings;
+pub mod mj_llm;
 pub mod runtime;
 pub mod store;

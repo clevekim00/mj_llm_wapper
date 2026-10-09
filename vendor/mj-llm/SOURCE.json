@@ -1,0 +1,21 @@
+{
+  "repository": "https://github.com/clevekim00/mj-llm",
+  "base_commit": "b764eeb066c0db8ca1b326cab10af3572df100cc",
+  "source_uncommitted": true,
+  "snapshot_date": "2026-10-08",
+  "source_sha256": {
+    "crates/app-core/Cargo.toml": "4044f48d60154014a6bd53e250e4df47af6b0e2cd8ee9fc62551fdd10cc446b7",
+    "crates/app-core/tests/integrity.rs": "5fdf538da3a7f4573ad574bda3511554c7b0ef9c82cb9281faf4793d3c653e70",
+    "crates/app-core/src/embedding.rs": "836f6824a04ef68ce62dfbcef84e5cf6fcbf98450fac08cd1c1801aca62c476e",
+    "crates/app-core/src/lib.rs": "47d249d7e1d142bdb26633dfc0d7a816486d2524f85897c5dcd37f352a60c147",
+    "crates/app-core/src/pin.rs": "10d4f7209b48d54d18785c53df8ac61b3093681f8a83e42cdd1019f24862b8c5",
+    "crates/app-core/src/integrity.rs": "795f64acdc1e3d20f10c1f4d96e3bed636fb449f37c43a2bc8d5b00ef4f70724",
+    "crates/runtime-litert/Cargo.toml": "2047b64757b15527ea9e31c71f488cb1022d43996261b100d343c5909c570a1b",
+    "crates/runtime-litert/build.rs": "af3205df72b22113ed39ab0250c87827f75fb79970ef0e90a12e1af40d5c52a0",
+    "crates/runtime-litert/native/bridge.cc": "05686b1aa1b2161c05a13b5b27901df61d29a5287e98bf2326f3be85d8f695dd",
+    "crates/runtime-litert/src/native.rs": "ee0aaf128a24566bb28ab7182d7c6d2bd60575144b93dec2e086557cda3b5076",
+    "crates/runtime-litert/src/generation.rs": "0c662eebcdc56919b3d8d4bab680b95fc4030545421379b64d6466df9db0d5ea",
+    "crates/runtime-litert/src/lib.rs": "3fbba87d8841d4f5125497a6844e50d881391889626e30c0660b083db2d433dc",
+    "catalog/n0.lock.json": "c9b0c74e1714af30d2ed627269de5ae6eac1d6984db1a73da5c5fe3222c1892f"
+  }
+}

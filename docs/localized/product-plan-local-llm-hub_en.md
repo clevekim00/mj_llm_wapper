@@ -2,15 +2,15 @@
 
 > English reader edition · [Canonical source](../../product-plan-local-llm-hub.md)
 
-Scope and roadmap for a local-first product that discovers and installs open-weight models on PCs, servers, and mobile devices, with RAG and MCP integration.
+Target design and release stages for a multimodal AI app running on PCs, Android and iOS without separate Ollama or Python installations.
 
 ## Key points
 
-- Measure the device first, then recommend a safe model, quantization, and context size.
-- Manage downloads, integrity, licensing, and model lifecycle in one interface.
-- Use runtime adapters on desktop/server and validate LiteRT-LM first on mobile.
-- Keep chat, per-project RAG, and approval-based MCP in one workspace.
-- Grow from the MVP through mobile, RAG/MCP, and ecosystem compatibility.
+- The first release assumes document/image search and evidence-grounded chat.
+- Separate EmbeddingGemma 2 retrieval from the answer-generation model.
+- Validate a shared Rust core and embedded LiteRT-LM on desktop and mobile.
+- Stages: feasibility, desktop, mobile, audio/video, then MCP and ecosystem.
+- Distinguish the current Ollama/Python development build from the target product.
 
 ## Shared principles
 

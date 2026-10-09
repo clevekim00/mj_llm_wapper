@@ -1,11 +1,11 @@
 use crate::{
-    catalog::{load_catalog, recommend},
+    catalog::recommend,
     device,
     domain::ModelRecommendation,
-    runtime::{ModelRuntime, OllamaRuntime, RuntimeEvent},
+    runtime::{ModelRuntime, RuntimeEvent},
 };
 use futures_util::StreamExt;
-use std::{collections::HashSet, error::Error, io::Write};
+use std::{collections::HashSet, error::Error, io::Write, sync::Arc};
 
 const GIB: u64 = 1024 * 1024 * 1024;
 
@@ -90,37 +90,39 @@ fn reject_unknown_flags(args: &[String], allowed: &[&str]) -> Result<(), String>
     }
 }
 
-pub async fn run(command: Command, runtime_url: String) -> Result<(), Box<dyn Error>> {
+pub async fn run(command: Command, runtime: Arc<dyn ModelRuntime>) -> Result<(), Box<dyn Error>> {
     match command {
         Command::Serve => unreachable!("serve is handled by main"),
         Command::Help => {
             print_help();
             Ok(())
         }
-        Command::Recommend { json } => recommend_command(runtime_url, json).await,
+        Command::Recommend { json } => recommend_command(runtime, json).await,
         Command::Install { model, yes, force } => {
-            install_command(runtime_url, &model, yes, force).await
+            install_command(runtime, &model, yes, force).await
         }
-        Command::AutoInstall { yes } => auto_install_command(runtime_url, yes).await,
+        Command::AutoInstall { yes } => auto_install_command(runtime, yes).await,
     }
 }
 
 async fn recommendations(
-    runtime: &OllamaRuntime,
+    runtime: &dyn ModelRuntime,
 ) -> Result<Vec<ModelRecommendation>, Box<dyn Error>> {
     let status = runtime.status().await;
     let installed: HashSet<String> = status.installed_models.into_iter().collect();
-    // Recommendation remains useful when Ollama is stopped. Runtime availability is
+    // Recommendation remains useful when the runtime is unavailable. Runtime availability is
     // reported separately and must not hide the hardware fit calculation.
     let profile = device::detect(true);
-    Ok(recommend(&load_catalog()?, &profile, &installed))
+    Ok(recommend(&runtime.catalog()?, &profile, &installed))
 }
 
-async fn recommend_command(runtime_url: String, json: bool) -> Result<(), Box<dyn Error>> {
-    let runtime = OllamaRuntime::new(runtime_url);
+async fn recommend_command(
+    runtime: Arc<dyn ModelRuntime>,
+    json: bool,
+) -> Result<(), Box<dyn Error>> {
     let status = runtime.status().await;
     let profile = device::detect(status.reachable);
-    let rows = recommendations(&runtime).await?;
+    let rows = recommendations(runtime.as_ref()).await?;
     if json {
         println!(
             "{}",
@@ -144,7 +146,8 @@ async fn recommend_command(runtime_url: String, json: bool) -> Result<(), Box<dy
         memory_label(profile.total_memory_bytes)
     );
     println!(
-        "Ollama: {} ({})\n",
+        "{}: {} ({})\n",
+        runtime.id(),
         if status.reachable {
             "연결됨"
         } else {
@@ -172,29 +175,30 @@ async fn recommend_command(runtime_url: String, json: bool) -> Result<(), Box<dy
 }
 
 async fn install_command(
-    runtime_url: String,
+    runtime: Arc<dyn ModelRuntime>,
     requested: &str,
     yes: bool,
     force: bool,
 ) -> Result<(), Box<dyn Error>> {
-    let runtime = OllamaRuntime::new(runtime_url);
-    let rows = recommendations(&runtime).await?;
+    let rows = recommendations(runtime.as_ref()).await?;
     let row = resolve_model(&rows, requested)
         .ok_or_else(|| format!("카탈로그에서 모델을 찾을 수 없습니다: {requested}"))?;
-    install_recommendation(&runtime, row, yes, force).await
+    install_recommendation(runtime.as_ref(), row, yes, force).await
 }
 
-async fn auto_install_command(runtime_url: String, yes: bool) -> Result<(), Box<dyn Error>> {
-    let runtime = OllamaRuntime::new(runtime_url);
-    let rows = recommendations(&runtime).await?;
+async fn auto_install_command(
+    runtime: Arc<dyn ModelRuntime>,
+    yes: bool,
+) -> Result<(), Box<dyn Error>> {
+    let rows = recommendations(runtime.as_ref()).await?;
     let row = choose_auto_install(&rows)
         .ok_or("설치 가능한 미설치 모델이 없습니다. recommend 결과를 확인하세요.")?;
     println!("자동 선택: {} — {}", row.artifact.display_name, row.reason);
-    install_recommendation(&runtime, row, yes, false).await
+    install_recommendation(runtime.as_ref(), row, yes, false).await
 }
 
 async fn install_recommendation(
-    runtime: &OllamaRuntime,
+    runtime: &dyn ModelRuntime,
     row: &ModelRecommendation,
     yes: bool,
     force: bool,
@@ -213,7 +217,7 @@ async fn install_recommendation(
     let status = runtime.status().await;
     if !status.reachable {
         return Err(format!(
-            "Ollama에 연결할 수 없습니다: {}. 먼저 `ollama serve`를 실행하세요.",
+            "런타임을 사용할 수 없습니다: {}. mj-llm은 docs/mj-llm-runtime.md의 native 빌드 설정을 확인하세요.",
             status.endpoint_id
         )
         .into());
@@ -255,8 +259,13 @@ fn resolve_model<'a>(
 }
 
 fn choose_auto_install(rows: &[ModelRecommendation]) -> Option<&ModelRecommendation> {
+    let eligible = |row: &&ModelRecommendation| {
+        !row.installed && matches!(row.fit.as_str(), "recommended" | "possible")
+    };
     rows.iter()
-        .find(|row| !row.installed && matches!(row.fit.as_str(), "recommended" | "possible"))
+        .filter(eligible)
+        .find(|row| row.artifact.capabilities.iter().any(|c| c == "chat"))
+        .or_else(|| rows.iter().find(eligible))
 }
 
 fn confirm(prompt: &str) -> Result<bool, std::io::Error> {

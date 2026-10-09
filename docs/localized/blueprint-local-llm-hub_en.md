@@ -2,15 +2,15 @@
 
 > English reader edition · [Canonical source](../../blueprint-local-llm-hub.md)
 
-Implementation blueprint for the Rust control plane, runtime adapters, model catalog, memory admission, and chat/RAG/MCP contracts.
+Design for the shared Rust core, embedded runtimes, multimodal assets/indexes/APIs, resource recovery and migration steps.
 
 ## Key points
 
-- API and UI depend only on the `ModelRuntime` contract, not a specific engine.
-- Ollama serves the MVP; mistral.rs is a primary PC/server candidate; LiteRT-LM is the mobile path.
-- Admission uses peak RAM, KV cache, and OS reserve—not download size alone.
-- Separate OpenAI-compatible inference from the native management API.
-- MCP defaults to least privilege, approval, secret isolation, and audit logs.
+- Chapter 5 defines the target architecture, data contracts, APIs and file-level migration.
+- Mobile calls the core through native bridges; desktop HTTP is optional.
+- Validate LiteRT-LM as the primary embedded engine and remove Ollama from product dependencies.
+- Keep vectors with different model, quantization, dimension or preprocessing profiles separate.
+- Release gates cover physical-device offline use, cancellation/recovery and multimodal retrieval quality.
 
 ## Shared principles
 

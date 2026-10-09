@@ -2,15 +2,16 @@
 
 > 日本語読者版 · [詳細な原文](../../README.md)
 
-端末に合うローカルモデルを推薦し、Ollamaで導入してWebまたはCLIから会話するRust製MVPです。
+mj-llm内蔵LiteRT-LMでOllamaなしにmacOS CPU会話とテキスト埋め込みを実行するRustプレビューです。
 
 ## 要点
 
-- Rust 1.85以上と起動中のOllamaが必要です。
-- `cargo run -- recommend`で推薦を確認し、`cargo run -- auto-install`で安全に導入します。
-- Web UIは既定で`http://127.0.0.1:3210`に開きます。
-- Qwen、Gemma、DeepSeek、Phi、Mistral、OpenAI gpt-ossをカタログ管理します。
-- モバイル推論、RAG、MCPは後続段階です。
+- 既定ランタイムはmj-llmです。Rust 1.95と固定LiteRT SDKで検証しました。
+- SDKの準備と起動方法は詳細原文のdocs/mj-llm-runtime.mdを参照してください。
+- Web UIはhttp://127.0.0.1:3210で開きます。
+- 会話はQwen3 0.6B、埋め込みはEmbeddingGemma 2を使います。
+- 生成入力は合計1024 bytes、出力は最大32 tokensで、完了後に表示します。
+- OllamaはMJ_HUB_RUNTIME=ollamaで選択します。モバイルnativeとトークン配信は未実装です。
 
 ## 共通原則
 

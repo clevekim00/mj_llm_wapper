@@ -113,6 +113,15 @@ pub trait ModelRuntime: Send + Sync {
     fn id(&self) -> &'static str;
     fn endpoint_id(&self) -> String;
     fn capabilities(&self) -> RuntimeCapabilities;
+    fn catalog(&self) -> Result<Vec<crate::domain::ModelArtifact>, serde_json::Error> {
+        crate::catalog::load_catalog()
+    }
+    async fn embed(&self, _request: &Value) -> Result<Value, RuntimeError> {
+        Err(RuntimeError {
+            code: RuntimeErrorCode::RuntimeUnavailable,
+            message: "Configure MJ_EMBEDDING_URL or use mj-llm with its embedding artifact".into(),
+        })
+    }
     async fn status(&self) -> RuntimeStatus;
     async fn install(&self, model: &str) -> Result<RuntimeEventStream, RuntimeError>;
     async fn chat(
@@ -396,4 +405,21 @@ fn openai_sse_events(response: Response) -> RuntimeEventStream {
             }
         }
     })
+}
+
+/// Explicit selection; never silently fall back to a different engine.
+pub async fn configured_runtime()
+-> Result<std::sync::Arc<dyn ModelRuntime>, Box<dyn std::error::Error>> {
+    match std::env::var("MJ_HUB_RUNTIME")
+        .as_deref()
+        .unwrap_or("mj-llm")
+    {
+        "mj-llm" => Ok(std::sync::Arc::new(
+            crate::mj_llm::MjLlmRuntime::from_env().await?,
+        )),
+        "ollama" => Ok(std::sync::Arc::new(OllamaRuntime::new(
+            std::env::var("OLLAMA_HOST").unwrap_or_else(|_| "http://127.0.0.1:11434".into()),
+        ))),
+        _ => Err("MJ_HUB_RUNTIME must be mj-llm or ollama".into()),
+    }
 }

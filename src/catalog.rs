@@ -20,7 +20,7 @@ pub fn recommend(
                 (
                     "runtime-required",
                     20,
-                    "로컬 Ollama 런타임을 시작해야 설치와 대화를 사용할 수 있습니다.",
+                    "선택한 런타임이 준비되지 않았습니다. mj-llm은 native 빌드와 SDK 설정을 확인하세요.",
                 )
             } else if ratio <= 0.55 {
                 (

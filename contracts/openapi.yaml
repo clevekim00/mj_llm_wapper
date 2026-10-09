@@ -8,10 +8,55 @@ servers:
 security:
   - bearerAuth: []
 paths:
+  /v1/embeddings:
+    post:
+      summary: Generate local EmbeddingGemma 2 text vectors
+      operationId: createEmbedding
+      description: >-
+        Default mj-llm native backend: float 768 dimensions, up to 8 text inputs,
+        8192 UTF-8 bytes per input and SDK 512-token overflow rejection.
+        mj.task supports document (default) and search_query; titles and other
+        tasks/dimensions are rejected. mj.embedding_space_id identifies the
+        native profile; never mix vectors with the Python reference profile.
+        Explicit MJ_EMBEDDING_URL selects the optional Python reference service,
+        which supports the broader tasks/dimensions below and 8192 tokens.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmbeddingRequest'
+      responses:
+        '200':
+          description: Ordered float embeddings and MJ profile metadata; usage only when available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmbeddingResponse'
+        '400':
+          $ref: '#/components/responses/GatewayError'
+        '401':
+          $ref: '#/components/responses/GatewayError'
+        '413':
+          $ref: '#/components/responses/GatewayError'
+        '429':
+          $ref: '#/components/responses/GatewayError'
+        '502':
+          $ref: '#/components/responses/GatewayError'
+        '503':
+          $ref: '#/components/responses/GatewayError'
+        '504':
+          $ref: '#/components/responses/GatewayError'
   /v1/chat/completions:
     post:
       summary: Create a streaming or completed chat response
       operationId: createChatCompletion
+      description: >-
+        Default mj-llm preview supports model mj-llm/qwen3-0.6b, text role-preserving
+        messages (total 1024 UTF-8 bytes, 512 native context tokens), stream=false,
+        max_tokens 1-32. Streaming, tools, sampling overrides and response_format
+        are rejected. finish_reason is null and usage omitted when unavailable.
+        Other fields below are supported by the explicit Ollama adapter only.
       requestBody:
         required: true
         content:
@@ -63,6 +108,77 @@ components:
       type: http
       scheme: bearer
   schemas:
+    EmbeddingRequest:
+      type: object
+      additionalProperties: false
+      required: [model, input]
+      properties:
+        model:
+          const: google/embeddinggemma-2
+        input:
+          oneOf:
+            - type: string
+              minLength: 1
+            - type: array
+              minItems: 1
+              maxItems: 32
+              items:
+                type: string
+                minLength: 1
+        dimensions:
+          type: integer
+          enum: [128, 256, 512, 768]
+          default: 768
+        encoding_format:
+          const: float
+        user:
+          type: string
+        mj:
+          type: object
+          additionalProperties: false
+          properties:
+            task:
+              type: string
+              default: document
+              enum: [document, search_query, question_answering, code_retrieval, fact_checking, classification, clustering, sentence_similarity]
+            titles:
+              type: array
+              description: Document task only; one nonempty title per input, otherwise none is used.
+              items:
+                type: string
+                minLength: 1
+    EmbeddingResponse:
+      type: object
+      required: [object, model, data, mj]
+      properties:
+        object:
+          const: list
+        model:
+          const: google/embeddinggemma-2
+        data:
+          type: array
+          items:
+            type: object
+            required: [object, index, embedding]
+            properties:
+              object:
+                const: embedding
+              index:
+                type: integer
+              embedding:
+                type: array
+                items:
+                  type: number
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+        mj:
+          type: object
+          description: Provider, task, dimensions, normalized=true, modalities=[text].
     ChatMessage:
       type: object
       required: [role, content]

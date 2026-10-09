@@ -2,15 +2,16 @@
 
 > English reader edition · [Canonical source](../../README.md)
 
-A Rust MVP that recommends a local model for the device, installs it through Ollama, and chats through the web UI or CLI.
+A Rust preview using embedded mj-llm/LiteRT-LM for macOS CPU chat and text embeddings without Ollama.
 
 ## Key points
 
-- Requires Rust 1.85+ and a running Ollama service.
-- Use `cargo run -- recommend`, then `cargo run -- auto-install` for a guarded install.
-- The web UI opens at `http://127.0.0.1:3210` by default.
-- The catalog covers Qwen, Gemma, DeepSeek, Phi, Mistral, and OpenAI gpt-oss.
-- Native mobile inference, RAG, and MCP are later phases.
+- The default runtime is mj-llm, verified with Rust 1.95 and a pinned LiteRT SDK.
+- Follow docs/mj-llm-runtime.md in the canonical source for SDK setup and launch.
+- The web UI opens at http://127.0.0.1:3210.
+- Chat uses Qwen3 0.6B; embeddings use EmbeddingGemma 2.
+- Generation allows 1024 input bytes total and 32 output tokens, delivered after completion.
+- Select Ollama explicitly with MJ_HUB_RUNTIME=ollama. Native mobile and token streaming are not implemented.
 
 ## Shared principles
 

@@ -2,3 +2,5 @@
 /.mj-local-llm-hub/
 /graphify-out/
 .DS_Store
+/.venv-embeddings/
+__pycache__/

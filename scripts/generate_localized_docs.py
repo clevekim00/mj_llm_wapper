@@ -34,33 +34,61 @@ DOCS = [
             "es": "Rapida Komenco de MJ Local LLM Hub",
         },
         "summary": {
-            "ko": "장치에 맞는 로컬 모델을 추천하고, Ollama로 설치한 뒤 웹 또는 CLI에서 대화하는 Rust MVP입니다.",
-            "en": "A Rust MVP that recommends a local model for the device, installs it through Ollama, and chats through the web UI or CLI.",
-            "jp": "端末に合うローカルモデルを推薦し、Ollamaで導入してWebまたはCLIから会話するRust製MVPです。",
-            "es": "Rust-a MVP kiu rekomendas lokan modelon por la aparato, instalas ĝin per Ollama, kaj babilas per la reto aŭ komandlinio.",
-        },
+            "ko": "mj-llm 내장 LiteRT-LM으로 Ollama 없이 macOS CPU 대화와 텍스트 임베딩을 실행하는 Rust 미리보기입니다.",
+            "en": "A Rust preview using embedded mj-llm/LiteRT-LM for macOS CPU chat and text embeddings without Ollama.",
+            "jp": "mj-llm内蔵LiteRT-LMでOllamaなしにmacOS CPU会話とテキスト埋め込みを実行するRustプレビューです。",
+            "es": "Rust-a antaŭvido kun enkonstruita mj-llm/LiteRT-LM por macOS-CPU-babilado kaj tekstaj enkorpigoj sen Ollama."
+},
         "points": {
-            "ko": ["Rust 1.85+와 실행 중인 Ollama가 필요합니다.", "`cargo run -- recommend`로 추천을 보고 `cargo run -- auto-install`로 안전하게 설치합니다.", "웹 UI는 기본적으로 `http://127.0.0.1:3210`에서 열립니다.", "Qwen, Gemma, DeepSeek, Phi, Mistral, OpenAI gpt-oss를 카탈로그로 관리합니다.", "현재 모바일 네이티브 추론, RAG, MCP는 후속 단계입니다."],
-            "en": ["Requires Rust 1.85+ and a running Ollama service.", "Use `cargo run -- recommend`, then `cargo run -- auto-install` for a guarded install.", "The web UI opens at `http://127.0.0.1:3210` by default.", "The catalog covers Qwen, Gemma, DeepSeek, Phi, Mistral, and OpenAI gpt-oss.", "Native mobile inference, RAG, and MCP are later phases."],
-            "jp": ["Rust 1.85以上と起動中のOllamaが必要です。", "`cargo run -- recommend`で推薦を確認し、`cargo run -- auto-install`で安全に導入します。", "Web UIは既定で`http://127.0.0.1:3210`に開きます。", "Qwen、Gemma、DeepSeek、Phi、Mistral、OpenAI gpt-ossをカタログ管理します。", "モバイル推論、RAG、MCPは後続段階です。"],
-            "es": ["Necesas Rust 1.85+ kaj funkcianta servo Ollama.", "Uzu `cargo run -- recommend`, poste `cargo run -- auto-install` por gardata instalado.", "La reta fasado aperas ĉe `http://127.0.0.1:3210` defaŭlte.", "La katalogo enhavas Qwen, Gemma, DeepSeek, Phi, Mistral kaj OpenAI gpt-oss.", "Denaska poŝtelefona inferenco, RAG kaj MCP venos poste."],
-        },
+            "ko": [
+                        "기본 런타임은 mj-llm입니다. Rust 1.95와 고정 LiteRT SDK에서 검증했습니다.",
+                        "SDK 준비와 실행은 상세 원문의 docs/mj-llm-runtime.md 안내를 따르세요.",
+                        "웹 UI는 http://127.0.0.1:3210에서 열립니다.",
+                        "대화 모델은 Qwen3 0.6B, 임베딩 모델은 EmbeddingGemma 2입니다.",
+                        "생성은 합계 1024-byte 입력·최대 32-token 출력·완료 후 표시 방식입니다.",
+                        "Ollama는 MJ_HUB_RUNTIME=ollama로 선택합니다. 모바일 native와 토큰 스트리밍은 아직 미지원입니다."
+            ],
+            "en": [
+                        "The default runtime is mj-llm, verified with Rust 1.95 and a pinned LiteRT SDK.",
+                        "Follow docs/mj-llm-runtime.md in the canonical source for SDK setup and launch.",
+                        "The web UI opens at http://127.0.0.1:3210.",
+                        "Chat uses Qwen3 0.6B; embeddings use EmbeddingGemma 2.",
+                        "Generation allows 1024 input bytes total and 32 output tokens, delivered after completion.",
+                        "Select Ollama explicitly with MJ_HUB_RUNTIME=ollama. Native mobile and token streaming are not implemented."
+            ],
+            "jp": [
+                        "既定ランタイムはmj-llmです。Rust 1.95と固定LiteRT SDKで検証しました。",
+                        "SDKの準備と起動方法は詳細原文のdocs/mj-llm-runtime.mdを参照してください。",
+                        "Web UIはhttp://127.0.0.1:3210で開きます。",
+                        "会話はQwen3 0.6B、埋め込みはEmbeddingGemma 2を使います。",
+                        "生成入力は合計1024 bytes、出力は最大32 tokensで、完了後に表示します。",
+                        "OllamaはMJ_HUB_RUNTIME=ollamaで選択します。モバイルnativeとトークン配信は未実装です。"
+            ],
+            "es": [
+                        "La defaŭlta rultempo estas mj-llm, kontrolita per Rust 1.95 kaj fiksita LiteRT SDK.",
+                        "Sekvu docs/mj-llm-runtime.md en la detala fonto por SDK-agordo kaj lanĉo.",
+                        "La reta fasado aperas ĉe http://127.0.0.1:3210.",
+                        "Babilado uzas Qwen3 0.6B; enkorpigoj uzas EmbeddingGemma 2.",
+                        "Generado permesas 1024 enigajn bajtojn kaj 32 eligajn tokenojn; la respondo aperas post fino.",
+                        "Elektu Ollama per MJ_HUB_RUNTIME=ollama. Denaska poŝtelefona uzo kaj tokena fluado ankoraŭ ne estas realigitaj."
+            ]
+},
     },
     {
         "slug": "product-plan-local-llm-hub",
         "source": "product-plan-local-llm-hub.md",
         "title": {"ko": "제품 기획서", "en": "Product Plan", "jp": "製品企画書", "es": "Produkta Plano"},
         "summary": {
-            "ko": "PC·서버·모바일에서 오픈 웨이트 모델을 쉽게 찾고 설치하며 RAG와 MCP를 연결하는 로컬 우선 제품의 범위와 로드맵입니다.",
-            "en": "Scope and roadmap for a local-first product that discovers and installs open-weight models on PCs, servers, and mobile devices, with RAG and MCP integration.",
-            "jp": "PC・サーバー・モバイルでオープンウェイトモデルを探して導入し、RAGとMCPを接続するローカル優先製品の範囲とロードマップです。",
-            "es": "Amplekso kaj vojmapo por loka-unua produkto, kiu trovas kaj instalas malfermitpezajn modelojn en komputiloj, serviloj kaj poŝaparatoj, kun RAG kaj MCP.",
+            "ko": "Ollama/Python 별도 설치 없이 PC·Android·iOS에서 실행하는 멀티모달 AI 제품의 목표 설계와 출시 단계입니다.",
+            "en": "Target design and release stages for a multimodal AI app running on PCs, Android and iOS without separate Ollama or Python installations.",
+            "jp": "OllamaやPythonの別途インストールなしでPC・Android・iOS上で動作するマルチモーダルAIの目標設計と開発段階です。",
+            "es": "Cela projekto kaj eldonaj etapoj por plurmodala AI en komputiloj, Android kaj iOS sen aparta instalado de Ollama aŭ Python."
         },
         "points": {
-            "ko": ["사용자의 시스템 사양을 먼저 측정하고 안전한 모델·양자화·컨텍스트를 추천합니다.", "모델 다운로드, 무결성, 라이선스, 실행 수명주기를 하나의 UI에서 관리합니다.", "데스크톱과 서버는 런타임 어댑터, 모바일은 LiteRT-LM 계열을 우선 검증합니다.", "대화, 프로젝트별 RAG, 승인 기반 MCP를 같은 워크스페이스에 둡니다.", "MVP에서 시작해 모바일, RAG/MCP, 생태계 호환 순서로 확장합니다."],
-            "en": ["Measure the device first, then recommend a safe model, quantization, and context size.", "Manage downloads, integrity, licensing, and model lifecycle in one interface.", "Use runtime adapters on desktop/server and validate LiteRT-LM first on mobile.", "Keep chat, per-project RAG, and approval-based MCP in one workspace.", "Grow from the MVP through mobile, RAG/MCP, and ecosystem compatibility."],
-            "jp": ["まず端末を測定し、安全なモデル・量子化・コンテキスト長を推薦します。", "ダウンロード、完全性、ライセンス、モデルのライフサイクルを一画面で管理します。", "デスクトップ／サーバーはランタイムアダプター、モバイルはLiteRT-LMを優先検証します。", "会話、プロジェクト別RAG、承認型MCPを一つのワークスペースに置きます。", "MVPからモバイル、RAG/MCP、互換性へ段階的に拡張します。"],
-            "es": ["Unue mezuru la aparaton, poste rekomendu sekuran modelon, kvantigon kaj kuntekstan longon.", "Administru elŝuton, integrecon, permesilon kaj modelan vivociklon en unu fasado.", "Uzu rultempajn adaptilojn por komputiloj/serviloj kaj unue validigu LiteRT-LM por poŝaparatoj.", "Kunigu babilon, projektan RAG kaj aprob-bazitan MCP en unu laborspaco.", "Kresku de la MVP al poŝtelefono, RAG/MCP kaj ekosistema kongruo."],
+            "ko": ["첫 출시는 문서·사진 검색과 근거 기반 대화를 기본 가정으로 합니다.", "검색용 EmbeddingGemma 2와 답변 생성 모델을 분리합니다.", "PC·모바일은 공통 Rust 코어와 내장 LiteRT-LM을 우선 검증합니다.", "기술 검증 → PC 흐름 → 모바일 출시 → 음성·영상 → MCP·생태계 순서입니다.", "현재 Ollama/Python 개발판과 목표 제품의 완료 상태를 구분합니다."],
+            "en": ["The first release assumes document/image search and evidence-grounded chat.", "Separate EmbeddingGemma 2 retrieval from the answer-generation model.", "Validate a shared Rust core and embedded LiteRT-LM on desktop and mobile.", "Stages: feasibility, desktop, mobile, audio/video, then MCP and ecosystem.", "Distinguish the current Ollama/Python development build from the target product."],
+            "jp": ["初回リリースは文書・画像検索と根拠付き対話を基本想定とします。", "検索用EmbeddingGemma 2と回答生成モデルを分離します。", "PCとモバイルで共通Rustコアと内蔵LiteRT-LMを検証します。", "技術検証、PC、モバイル、音声・動画、MCPの順に進めます。", "現在のOllama/Python開発版と目標製品の完成状態を区別します。"],
+            "es": ["La unua eldono supozas dokumentan/bildan serĉon kaj pruv-bazitan babilon.", "Apartigu serĉon per EmbeddingGemma 2 de la respondgenera modelo.", "Validigu komunan Rust-kernon kaj enkonstruitan LiteRT-LM sur komputiloj kaj poŝtelefonoj.", "Etapoj: farebleco, komputilo, poŝtelefono, sono/video, poste MCP kaj ekosistemo.", "Distingu la nunan Ollama/Python-prototipon disde la cela produkto."]
         },
     },
     {
@@ -68,16 +96,16 @@ DOCS = [
         "source": "blueprint-local-llm-hub.md",
         "title": {"ko": "통합 설계서", "en": "Integrated Architecture", "jp": "統合設計書", "es": "Integrita Arkitekturo"},
         "summary": {
-            "ko": "Rust 제어 계층, 런타임 어댑터, 모델 카탈로그, 메모리 입장 제어, 대화·RAG·MCP 계약을 정의한 구현 기준 문서입니다.",
-            "en": "Implementation blueprint for the Rust control plane, runtime adapters, model catalog, memory admission, and chat/RAG/MCP contracts.",
-            "jp": "Rust制御層、ランタイムアダプター、モデルカタログ、メモリ受け入れ、会話・RAG・MCP契約を定義する実装基準です。",
-            "es": "Realiga skizo por la Rust-regtavolo, rultempaj adaptiloj, modela katalogo, memor-akcepto kaj kontraktoj por babilo/RAG/MCP.",
+            "ko": "PC·모바일 공통 Rust 코어, 내장 런타임, 멀티모달 자료·인덱스·API, 메모리·복구 정책과 구현 순서를 정의합니다.",
+            "en": "Design for the shared Rust core, embedded runtimes, multimodal assets/indexes/APIs, resource recovery and migration steps.",
+            "jp": "共通Rustコア、内蔵ランタイム、マルチモーダル資料・索引・API、資源管理・復旧と実装順序を定義します。",
+            "es": "Projekto por komuna Rust-kerno, enkonstruitaj rultempoj, plurmodalaj datumoj/indeksoj/API, rimed-reakiro kaj migrado."
         },
         "points": {
-            "ko": ["API와 UI는 특정 런타임을 직접 알지 않고 `ModelRuntime` 계약만 사용합니다.", "Ollama는 MVP, mistral.rs는 PC/서버 주력 후보, LiteRT-LM은 모바일 경로입니다.", "추천은 다운로드 크기가 아니라 peak RAM, KV cache, OS 여유를 기준으로 합니다.", "OpenAI 호환 API와 자체 관리 API를 분리합니다.", "MCP는 최소 권한, 승인, 비밀값 격리, 감사 로그를 기본으로 합니다."],
-            "en": ["API and UI depend only on the `ModelRuntime` contract, not a specific engine.", "Ollama serves the MVP; mistral.rs is a primary PC/server candidate; LiteRT-LM is the mobile path.", "Admission uses peak RAM, KV cache, and OS reserve—not download size alone.", "Separate OpenAI-compatible inference from the native management API.", "MCP defaults to least privilege, approval, secret isolation, and audit logs."],
-            "jp": ["APIとUIは特定エンジンではなく`ModelRuntime`契約だけに依存します。", "OllamaはMVP、mistral.rsはPC／サーバー候補、LiteRT-LMはモバイル経路です。", "推薦はファイル容量だけでなくpeak RAM、KV cache、OS余裕を使います。", "OpenAI互換推論APIと独自管理APIを分離します。", "MCPは最小権限、承認、秘密情報の隔離、監査ログを標準にします。"],
-            "es": ["API kaj UI dependas nur de la kontrakto `ModelRuntime`, ne de specifa motoro.", "Ollama servas la MVP-on; mistral.rs estas ĉefa kandidato por komputilo/servilo; LiteRT-LM estas la poŝtelefona vojo.", "Akcepto uzas pintan RAM, KV-kaŝmemoron kaj OS-rezervon, ne nur dosiergrandon.", "Apartigu OpenAI-kongruan inferencon de la denaska administra API.", "MCP defaŭlte uzas minimumajn rajtojn, aprobon, sekret-izoladon kaj protokolojn."],
+            "ko": ["설계서 5장에 목표 아키텍처, 데이터 계약, API와 파일별 전환 작업을 정리했습니다.", "모바일은 native bridge로 코어를 호출하고 PC HTTP API는 선택형으로 둡니다.", "LiteRT-LM을 PC·모바일 주력 후보로 검증하며 Ollama는 새 제품 의존성에서 제외합니다.", "모델·양자화·차원·전처리가 다른 벡터 공간은 혼합하지 않습니다.", "실기기 오프라인, 취소·복원, 멀티모달 검색 품질을 출시 gate로 삼습니다."],
+            "en": ["Chapter 5 defines the target architecture, data contracts, APIs and file-level migration.", "Mobile calls the core through native bridges; desktop HTTP is optional.", "Validate LiteRT-LM as the primary embedded engine and remove Ollama from product dependencies.", "Keep vectors with different model, quantization, dimension or preprocessing profiles separate.", "Release gates cover physical-device offline use, cancellation/recovery and multimodal retrieval quality."],
+            "jp": ["第5章に目標構成、データ契約、API、ファイル別移行作業をまとめています。", "モバイルはnative bridgeでコアを呼び、PCのHTTP APIは任意にします。", "LiteRT-LMを主エンジン候補として検証し、Ollama依存を外します。", "モデル・量子化・次元・前処理が異なるベクトルを混ぜません。", "実機オフライン、取消・復旧、マルチモーダル検索品質を公開条件とします。"],
+            "es": ["Ĉapitro 5 difinas la celan arkitekturon, datumkontraktojn, API kaj dosieran migradon.", "Poŝtelefonoj vokas la kernon per denaskaj pontoj; komputila HTTP estas laŭvola.", "Validigu LiteRT-LM kiel ĉefan enkonstruitan motoron kaj forigu la produktan dependecon de Ollama.", "Ne miksu vektorojn kun malsamaj modeloj, kvantigoj, dimensioj aŭ antaŭtraktado.", "Eldonaj kontroloj kovras senretan uzon sur realaj aparatoj, nuligon/reakiron kaj plurmodalan serĉkvaliton."]
         },
     },
     {
@@ -278,7 +306,7 @@ GUIDE = {
     "es": ("Metu AI-amikon en vian komputilon", "1. Kontrolu la komputilon", "2. Elektu modelon kiu taŭgas", "3. Elŝutu kaj babilu", "Komencu per malgranda modelo. Tio estas pli sekura."),
 }
 guide_panels = "".join(
-    f'''<section class="lang-panel" data-panel="{code}" lang="{LANGS[code]["html"]}" {"" if i==0 else "hidden"}><h1>{escape(text[0])}</h1><div class="steps"><article><b class="step-number">01</b><h2>{escape(text[1])}</h2><code>cargo run -- recommend</code></article><article><b class="step-number">02</b><h2>{escape(text[2])}</h2><p>RAM + model + context</p></article><article><b class="step-number">03</b><h2>{escape(text[3])}</h2><code>cargo run -- auto-install</code></article></div><div class="tip">{escape(text[4])}</div></section>'''
+    f'''<section class="lang-panel" data-panel="{code}" lang="{LANGS[code]["html"]}" {"" if i==0 else "hidden"}><h1>{escape(text[0])}</h1><div class="steps"><article><b class="step-number">01</b><h2>{escape(text[1])}</h2><code>bash scripts/run-mj-llm-macos.sh recommend</code></article><article><b class="step-number">02</b><h2>{escape(text[2])}</h2><p>RAM + model + context</p></article><article><b class="step-number">03</b><h2>{escape(text[3])}</h2><code>bash scripts/run-mj-llm-macos.sh auto-install</code></article></div><div class="tip">{escape(text[4])}</div></section>'''
     for i,(code,text) in enumerate(GUIDE.items())
 )
 guide_style = STYLE + ".content{text-align:center}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.steps article{background:#0d141b;border:1px solid #2c3945;border-radius:14px;padding:26px}.steps h2{font-size:1.25rem}.steps code{display:block;background:#061018;color:#fff;padding:10px;border-radius:7px;overflow:auto}.tip{font-size:1.25rem;font-weight:850;background:#12343a;color:#baf8ff;border-radius:12px;padding:20px;margin-top:18px}@media(max-width:700px){.steps{grid-template-columns:1fr}}"

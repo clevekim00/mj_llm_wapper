@@ -1,6 +1,6 @@
 # Local LLM Hub 제품 기획서
 
-> 업데이트: 2026-08-31
+> 업데이트: 2026-10-08
 >
 > 기준 영상: [구독료 0원, 내 PC에서 돌아가는 LLM 5개](https://www.youtube.com/shorts/4fmdeK2Hf6I)
 >
@@ -12,7 +12,9 @@
 
 ## 1. 제품 한 줄 정의
 
-내 장치 사양을 분석해 적합한 로컬 LLM을 추천·설치하고, ChatGPT처럼 대화하면서 문서 RAG와 MCP 도구를 프로젝트별로 연결하는 PC·서버·모바일용 로컬 AI 허브다.
+Ollama나 Python을 별도로 설치하지 않고 PC·Android·iOS에서 직접 실행하며, 내 문서·사진을 검색하고 근거를 보며 대화하는 로컬 멀티모달 AI 허브다. 음성·영상 검색과 MCP는 같은 프로젝트 구조 위에서 확장한다. 공통 Rust 코어와 내장 LiteRT-LM을 우선 검증한다.
+
+첫 출시 범위는 문서·사진 검색과 근거 기반 대화를 기본 가정으로 한다. 현재 구현은 Ollama 개발판과 선택형 Python 텍스트 임베딩 서비스이며, 위 제품 목표의 구현 완료를 뜻하지 않는다. 구현 계약·migration·실기기 gate는 [통합 설계서 5장](blueprint-local-llm-hub.md#5-native-multimodal-product-design)을 기준으로 한다.
 
 ## 2. 해결할 문제
 
@@ -43,7 +45,9 @@
 8. 노트북·모바일에서 더 강한 내 PC/서버를 `Trusted Node`로 연결해 원격 추론한다.
 9. 복잡한 agent 작업은 계획을 작은 단계로 나누고 실행·테스트 결과를 확인한다.
 
-## 4. 초기 필수 지원 모델 5개
+## 4. 출시 기본 모델과 확장 모델군
+
+첫 출시 gate는 대상 플랫폼마다 검증된 검색용 EmbeddingGemma 2 variant 1개와 생성용 소형 모델 1개다. 검색용은 text-vision artifact, 생성용은 Gemma 4 소형 variant를 우선 평가한다. 실제 runtime·artifact·기기 검증 결과로 확정하며 아래 확장 모델군 전체를 첫 출시 조건으로 요구하지 않는다.
 
 | 모델군 | 기준 variant | 제품 내 역할 | 우선 플랫폼 | 주요 capability | 제품 정책 |
 |---|---|---|---|---|---|
@@ -60,8 +64,8 @@
 
 - 공식 또는 승인된 배포처와 revision이 고정되어 있다.
 - 파일 크기, checksum, 라이선스, provenance를 확인할 수 있다.
-- 적합한 runtime과 chat template이 등록되어 있다.
-- 설치, 첫 토큰, 스트리밍, 중지, 재시작 후 대화 복원이 동작한다.
+- 적합한 runtime과 task별 template/preprocess profile이 등록되어 있다.
+- 생성 모델은 설치, 첫 토큰, 스트리밍, 중지, 대화 복원을 검증한다. 임베딩 모델은 지원 modality·차원·정규화·검색 품질·취소를 검증한다.
 - RAG prompt 및 citation이 깨지지 않는다.
 - tool calling을 지원하는 variant만 MCP 자동 호출을 활성화한다.
 - 대상 플랫폼의 실제 장치 benchmark를 통과한다.
@@ -104,7 +108,7 @@
 
 ### A. 모델 센터
 
-- 5개 필수 모델군 필터 및 비교
+- 검색용/생성용 패키지 추천 및 확장 모델군 필터·비교
 - 장치에 맞는 단일 추천을 먼저 보여주고 전체 catalog를 선택적으로 탐색
 - `최신`, `호환성`, `검증됨`, `실험적`, `지원 불가` badge
 - 양자화별 다운로드 크기와 예상 peak RAM
@@ -137,13 +141,15 @@
 
 ### D. 로컬 RAG
 
-- PDF, Markdown, TXT, 웹페이지, 폴더 동기화
+- 첫 출시: PDF, Markdown, TXT, 사진. 후속: 음성·영상, 웹페이지, 폴더 감시
 - 로컬 embedding과 hybrid retrieval
-- 소형 embedding 모델 자동 준비, 실패 시 lexical retrieval로 제한 동작
+- 내장 EmbeddingGemma 2의 검증 artifact 준비, 실패 시 텍스트 lexical-only 모드를 명시
 - 대화에 즉시 붙이는 in-memory `Quick RAG`와 영속적인 프로젝트 `Persistent RAG` 구분
-- 답변별 문서명·페이지·청크 citation
+- 답변별 문서명·페이지·사진 citation, 확장 단계에서 오디오·영상의 구간 timestamp
 - 프로젝트별 인덱스 격리
 - 변경된 파일만 증분 색인
+- 모델 revision·차원·양자화·전처리별 embedding-space 분리와 원자적 인덱스 전환
+- 자료 삭제 즉시 검색 제외; image embedding을 OCR·설명 텍스트로 간주하지 않음
 
 ### E. MCP
 
@@ -158,8 +164,8 @@
 ### F. 개발자 API
 
 - OpenAI 호환 chat completions의 필수 subset
-- OpenAI Responses와 Anthropic Messages는 검증된 subset부터 adapter로 제공하고 Ollama adapter는 후순위 적용
-- 모델 설치·상태·추천을 위한 native management API
+- OpenAI Responses와 Anthropic Messages는 후속 단계에서 검증된 subset부터 제공; Ollama 실행 의존성은 새 제품에서 제외
+- 모델 설치·상태·추천과 미디어 asset·index job·검색을 위한 native management API
 - SSE 또는 WebSocket streaming
 - capability, 실제 안전 context, resident 상태를 제공하는 model discovery endpoint
 - endpoint·field·streaming·tool별 버전형 API conformance matrix 공개
@@ -171,7 +177,7 @@
 - refcount로 사용 중 unload를 방지하고 모델 수·resident bytes를 함께 제한
 - 동시 load 예상량을 reserved memory에 포함해 oversubscription을 사전 차단
 - free-memory preflight, idle timeout, refcount 0 LRU eviction을 공통 정책으로 적용
-- OpenAI·Anthropic·Ollama 요청을 공통 conversation/generation event로 정규화
+- 외부 protocol facade 요청을 공통 conversation/generation event로 정규화; 내장 UI는 직접 AppService 호출
 - macOS MLX adapter는 inference owner thread를 분리하고 요청별 KV·vision 상태를 slot에 격리
 
 ### G. Model Lab
@@ -225,13 +231,15 @@
 
 | 플랫폼 | 실행 방식 | 1차 검증 대상 |
 |---|---|---|
-| Android | 앱 내장 runtime, CPU/GPU/NPU capability | Qwen3 소형, Gemma 4 E2B/E4B, Phi-4 Mini, DeepSeek 7B 조건부 |
-| iOS | 앱 내장 runtime, CPU/Metal capability | Qwen3 소형, Gemma 4 검증 variant, Phi-4 Mini, DeepSeek 7B 조건부 |
-| macOS | Rust core + GGUF/LiteRT/MLX adapter | 5개 모델군 모두 |
-| Windows | Rust core + GGUF/LiteRT adapter | 5개 모델군 모두 |
-| Linux/Server | Rust core + GGUF/server adapter | 5개 모델군 모두 |
+| Android | Compose + Rust core + 내장 LiteRT-LM bridge | EmbeddingGemma 2 text/image + 소형 생성 모델; 실기기 gate |
+| iOS | SwiftUI + Rust core + 내장 LiteRT-LM bridge | 같은 task 계약; Swift SDK preview·실기기 gate |
+| macOS | PC 셸 + Rust core + 내장 LiteRT-LM | 검색/생성 기본 패키지, CPU 후 GPU 검증 |
+| Windows | PC 셸 + Rust core + 내장 LiteRT-LM | 동일 패키지의 Windows artifact/backend 조합 검증 |
+| Linux/Server | PC UI 또는 Rust headless facade + 내장 LiteRT-LM | 동일 task 계약, 선택형 loopback API |
 
 모바일 직접 실행은 제품 필수 조건이지만 모든 모델을 모바일에서 실행한다는 의미는 아니다. 각 플랫폼에서 안전하게 실행 가능한 variant를 제공하고, 부적합한 모델은 이유와 대안을 보여준다.
+
+모바일 UI는 코어를 native bridge로 호출하며 localhost HTTP 서버를 필수로 띄우지 않는다. PC·모바일의 프로젝트 저장은 기본적으로 독립적이며 자동 동기화를 가정하지 않는다. 앱이 background로 이동하면 색인을 checkpoint 후 일시중지하고 복귀 시 재개한다. 모든 앱에 Ollama/Python 미설치 E2E gate를 적용한다.
 
 macOS MLX adapter는 `mlx-serve`의 native inference 구조를 참고하되 Zig/mlx-c 코드를 그대로 fork하지 않는다. 모델 catalog, 대화, RAG, MCP 권한, protocol facade는 Rust 공통 코어가 소유하고 각 runtime은 좁은 adapter ABI 뒤에 둔다.
 
@@ -247,6 +255,7 @@ macOS MLX adapter는 `mlx-serve`의 native inference 구조를 참고하되 Zig/
 8. **Project Arena**: 요구사항 고정 → 모델 2개 선택 → 격리 실행 → acceptance test → 결과·수정 비용 비교
 9. **세션 모니터**: Quick/Balanced/Deep → 메모리 여유 → swap/thermal → context 또는 variant 자동 조정 제안
 10. **모델 운영**: resident slot → load/unload → queue → cache hit → admission·eviction 이력
+11. **자료 검색**: 파일·사진 추가 → 색인 진행/일시중지 → 의미 검색 → 원본 페이지·사진 열기 → 근거로 답변
 
 ## 9. 성공 지표
 
@@ -269,40 +278,46 @@ macOS MLX adapter는 `mlx-serve`의 native inference 구조를 참고하되 Zig/
 
 ## 10. 출시 단계
 
-### Phase 0 — 기술 검증
+### N0 — 내장 런타임 기술 검증
 
-- 5개 모델의 공식 artifact와 라이선스 manifest 작성
+- 검색용·생성용 기본 패키지의 artifact와 라이선스 manifest 작성
 - PC 3 OS 및 Android/iOS 표본 장치 benchmark
 - 모델별 chat template와 streaming event 검증
 - TTFT/prefill/decode/peak-memory benchmark harness와 task-completion 평가셋
 - 동일 실제 프로젝트 비교용 acceptance-test fixture와 plan-to-code 추적 규칙
 - mlx-serve와 독립 비교하는 MLX/GGUF cold·warm benchmark 및 API conformance fixture
 - model registry의 reserved-memory, refcount, LRU eviction fault-injection 시험
+- native SDK의 prefix/preprocessing 일치 검증; 모바일 feasibility를 PC 기능 구현보다 먼저 확인
 
-### Phase 1 — Local Chat MVP
+### N1 — PC 문서·사진 검색과 근거 대화
 
 - 장치 진단, 모델 센터, 설치, 스트리밍 채팅
-- 5개 모델 PC/서버 지원
-- 모바일 3개 우선 family의 verified variant 제공
+- PC OS별 검증된 검색 모델 1개·생성 모델 1개 제공
+- Ollama/Python 없이 설치·실행·오프라인 복원
+- 문서·사진 수집, hybrid search, 출처, SQLite job/checkpoint 저장
 - Simple/Advanced runtime preset과 context memory calculator 제공
 - 개인 장치 실측 기반 workload별 모델 profile 제공
 - memory admission guard와 Quick/Balanced/Deep session profile 제공
 - load/unload/rescan, resident LRU, 기존 cache read-only discovery 제공
 - localhost-only strict token과 OpenAI Chat subset conformance matrix 제공
 
-### Phase 2 — RAG
+### N2 — Android·iOS 공통 출시
 
-- 파일/URL/폴더 수집
-- 로컬 hybrid retrieval와 citation
-- Quick RAG fallback과 Persistent RAG 증분 index 분리
+- 모바일 native UI·런타임 bridge, 문서·사진 검색·근거 대화
+- 권한 취소·background·강제 종료·열·메모리 복구
+- 실기기 비행기 모드 E2E와 플랫폼별 품질 gate
 
-### Phase 3 — MCP
+### N3 — 음성·영상 검색
+
+- 메모리 제한 구간 decode, timestamp 보존, cross-modal retrieval
+- 결과 구간 재생, 인용 정합성, 긴 파일 취소·재개
+- ASR·OCR은 별도 capability로 표시; embedding과 혼동하지 않음
+
+### N4 — MCP 및 생태계 확장
 
 - registry, permission gateway, sandbox, audit
 - 모델별 tool-calling capability 적용
 - curated marketplace와 custom stdio/HTTP transport lifecycle 제공
-
-### Phase 4 — 생태계 확장
 
 - OpenAI 호환 API 안정화
 - 추가 Qwen/Gemma/Mistral/Phi/DeepSeek revision 자동 갱신
@@ -312,6 +327,9 @@ macOS MLX adapter는 `mlx-serve`의 native inference 구조를 참고하되 Zig/
 - Ornith 1.5를 포함한 fast-track candidate 검증 파이프라인 운영
 
 ## 11. 공식 근거와 주의사항
+
+- [LiteRT-LM 플랫폼·SDK 지원](https://developers.google.com/edge/litert-lm/overview)과 [Embedding API](https://developers.google.com/edge/litert-lm/embedding_models)를 내장 실행의 조사 기준으로 사용한다. 공식 지원 표와 프로젝트 실기기 Verified 상태를 구분한다.
+- 상세 artifact·전처리·runtime 근거와 잠정 성능 목표는 통합 설계서 5.2·5.11을 따른다.
 
 - [Qwen3 공식 로컬 실행 문서](https://github.com/QwenLM/Qwen3/blob/main/docs/source/run_locally/llama.cpp.md)는 공식 GGUF와 llama.cpp 경로를 안내한다.
 - [DeepSeek-R1 공식 저장소](https://github.com/deepseek-ai/DeepSeek-R1)는 Distill-Qwen-7B와 모델별 기반 라이선스를 설명한다.
